@@ -9,11 +9,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
 public class TelegramPollingBot extends TelegramLongPollingBot {
-    private final TelegramProperties telegramProperties;
 
+    private final TelegramProperties telegramProperties;
     private final TelegramBotService telegramBotService;
 
-    public TelegramPollingBot(TelegramProperties telegramProperties, TelegramBotService telegramBotService) {
+    public TelegramPollingBot(TelegramProperties telegramProperties,
+                              TelegramBotService telegramBotService) {
         this.telegramProperties = telegramProperties;
         this.telegramBotService = telegramBotService;
     }
