@@ -49,6 +49,7 @@ public class TelegramAdminController {
     }
 
     /** Set or reset webhook */
+    //RUN THIS FIRST
     @PostMapping("/reset")
     public String resetWebhook() {
         try {

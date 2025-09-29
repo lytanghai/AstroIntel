@@ -12,7 +12,7 @@ public class KeepAlivePing {
     @Scheduled(fixedRate = 10 * 60 * 1000) // every 10 min
     public void pingSelf() {
         try {
-            restTemplate.getForObject("https://astrointel.onrender.com/telegram/webhook", String.class);
+            restTemplate.postForObject("https://astrointel.onrender.com/telegram/webhook", String.class, null);
             System.out.println("Pinged self to prevent sleep");
         } catch (Exception e) {
             e.printStackTrace();

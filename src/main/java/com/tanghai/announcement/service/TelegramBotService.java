@@ -2,7 +2,6 @@ package com.tanghai.announcement.service;
 
 import com.tanghai.announcement.component.TelegramSender;
 import com.tanghai.announcement.service.internet.ForexService;
-import com.tanghai.announcement.utilz.Commander;
 import com.tanghai.announcement.utilz.Formatter;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -31,7 +30,7 @@ public class TelegramBotService {
         switch (command) {
             case "/start": return "Greetings, " + user + "! Astro Bot at your service!";
             case "/ping": return "Astro Bot is up and healthy!";
-            case "/economic-calendar": return Formatter.formatForexCalendar(ForexService.economicCalendar());
+            case "/calendar": return Formatter.formatForexCalendar(ForexService.economicCalendar());
             case "/help": return "Commands:\n/start\n/ping\n/help";
             default: return "Unknown command: " + command;
         }
