@@ -2,6 +2,8 @@ package com.tanghai.announcement.component;
 
 import com.tanghai.announcement.service.TelegramBotService;
 import com.tanghai.announcement.utilz.Commander;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
@@ -12,6 +14,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
 public class TelegramComponent extends TelegramWebhookBot {
+
+    private final Logger  logger = LoggerFactory.getLogger(TelegramComponent.class);
 
     private final TelegramBotService telegramBotService;
     private final String botToken;
@@ -48,7 +52,7 @@ public class TelegramComponent extends TelegramWebhookBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String chatId = update.getMessage().getChatId().toString();
             String command = update.getMessage().getText();
-
+            logger.info("Received {} {}", update.getMessage().getChatId().toString(), update.getMessage().getText());
             String reply = telegramBotService.processCommandText(command);
             SendMessage message = new SendMessage(chatId, reply);
             try {
