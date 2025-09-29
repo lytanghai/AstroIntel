@@ -1,6 +1,8 @@
 package com.tanghai.announcement.component;
 
 import com.tanghai.announcement.service.TelegramBotService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
@@ -10,6 +12,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
 public class TelegramComponent extends TelegramWebhookBot {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final TelegramBotService telegramBotService;
 
@@ -56,6 +60,7 @@ public class TelegramComponent extends TelegramWebhookBot {
                     .text(reply)
                     .build();
         }
+        log.info("Update object is empty");
         return null;
     }
 }
