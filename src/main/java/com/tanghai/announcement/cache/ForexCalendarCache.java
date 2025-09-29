@@ -1,6 +1,7 @@
 package com.tanghai.announcement.cache;
 
 import com.tanghai.announcement.dto.resp.ForexCalendarResp;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,5 +43,14 @@ public class ForexCalendarCache {
 
     public void clear() {
         cache.clear();
+    }
+
+    /**
+     * Clear cache automatically every 24 hours
+     * Fixed rate = 24 * 60 * 60 * 1000 ms = 86400000 ms
+     */
+    @Scheduled(fixedRate = 86400000)
+    public void scheduledClear() {
+        clear();
     }
 }
