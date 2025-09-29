@@ -1,21 +1,14 @@
 package com.tanghai.announcement.component;
 
-import com.tanghai.announcement.service.TelegramBotService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.springframework.beans.factory.annotation.Value;
 
 @Component
 public class TelegramComponent extends TelegramWebhookBot {
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    private final TelegramBotService telegramBotService;
 
     @Value("${telegram.bot.token}")
     private String botToken;
@@ -23,15 +16,8 @@ public class TelegramComponent extends TelegramWebhookBot {
     @Value("${telegram.bot.username}")
     private String botUsername;
 
-    @Value("${telegram.bot.webhook-path}")
+    @Value("${telegram.bot.webhook-path:/telegram/webhook}")
     private String botPath;
-
-    @Value("${app.base-url}")
-    private String baseUrl;
-
-    public TelegramComponent(TelegramBotService telegramBotService) {
-        this.telegramBotService = telegramBotService;
-    }
 
     @Override
     public String getBotToken() {
@@ -50,17 +36,16 @@ public class TelegramComponent extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            String chatId = update.getMessage().getChatId().toString();
-            String command = update.getMessage().getText();
-            String reply = telegramBotService.handleUpdate(update);
-
-            return SendMessage.builder()
-                    .chatId(chatId)
-                    .text(reply)
-                    .build();
-        }
-        log.info("Update object is empty");
+        // Do nothing here. Updates are handled via controller.
         return null;
+    }
+
+    // Helper method to send messages
+    public void sendMessage(org.telegram.telegrambots.meta.api.methods.send.SendMessage message) {
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 }

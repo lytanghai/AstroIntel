@@ -1,64 +1,35 @@
 package com.tanghai.announcement.service;
 
-import com.tanghai.announcement.component.TelegramComponent;
+import com.tanghai.announcement.component.TelegramSender;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Service
 public class TelegramBotService {
 
-    private final TelegramComponent telegramComponent;
+    private final TelegramSender telegramSender;
 
-    public TelegramBotService(TelegramComponent telegramComponent) {
-        this.telegramComponent = telegramComponent;
+    public TelegramBotService(TelegramSender telegramSender) {
+        this.telegramSender = telegramSender;
     }
 
-    /**
-     * Main entry point from controller
-     *
-     * @return
-     */
-    public String handleUpdate(Update update) {
+    public void handleUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String chatId = update.getMessage().getChatId().toString();
-            String text = update.getMessage().getText();
+            String command = update.getMessage().getText();
 
-            // Process command and get reply
-            String reply = processCommand(text);
+            String reply = processCommand(command);
 
-            // Send reply
-            sendMessage(chatId, reply);
+            telegramSender.send(chatId, reply);
         }
-        return null;
     }
 
-    /** Business logic for commands */
     private String processCommand(String command) {
         switch (command) {
-            case "/start":
-                return "Hello! I’m your bot 🤖\nType /ping to test.";
-            case "/ping":
-                return "Pong!";
-            case "/help":
-                return "Available commands:\n/start - Welcome message\n/ping - Test bot";
-            default:
-                return "Unknown command: " + command;
-        }
-    }
-
-    /** Send a message back to Telegram */
-    private void sendMessage(String chatId, String text) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(text);
-
-        try {
-            telegramComponent.execute(message);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-            System.err.println("Failed to send message to chatId " + chatId);
+            case "/start": return "Hello! I’m your bot 🤖";
+            case "/ping": return "Pong!";
+            case "/help": return "Commands:\n/start\n/ping\n/help";
+            default: return "Unknown command: " + command;
         }
     }
 }

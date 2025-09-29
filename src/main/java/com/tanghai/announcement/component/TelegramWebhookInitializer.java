@@ -1,7 +1,5 @@
 package com.tanghai.announcement.component;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
@@ -12,13 +10,12 @@ import javax.annotation.PostConstruct;
 @Component
 public class TelegramWebhookInitializer {
 
-    private static final Logger log = LoggerFactory.getLogger(TelegramWebhookInitializer.class);
     private final TelegramComponent telegramComponent;
 
     @Value("${app.base-url}")
     private String baseUrl;
 
-    @Value("${telegram.bot.webhook-path}")
+    @Value("${telegram.bot.webhook-path:/telegram/webhook}")
     private String webhookPath;
 
     public TelegramWebhookInitializer(TelegramComponent telegramComponent) {
@@ -28,11 +25,10 @@ public class TelegramWebhookInitializer {
     @PostConstruct
     public void initWebhook() {
         try {
-            String fullWebhookUrl = baseUrl + "/telegram/webhook";
-            SetWebhook setWebhook = SetWebhook.builder().url(fullWebhookUrl).build();
+            String webhookUrl = baseUrl + webhookPath;
+            SetWebhook setWebhook = SetWebhook.builder().url(webhookUrl).build();
             telegramComponent.setWebhook(setWebhook);
-            log.info("Successfully set webhook url: {} ", setWebhook.getUrl());
-            log.info("Webhook URL: {}", fullWebhookUrl);
+            System.out.println("✅ Webhook set to: " + webhookUrl);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
