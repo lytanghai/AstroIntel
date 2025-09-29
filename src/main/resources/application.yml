@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: announcement
+
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN}
+    username: ${TELEGRAM_BOT_USERNAME}
+    webhook-path: /telegram/webhook
+
+server:
+  port: 8080
