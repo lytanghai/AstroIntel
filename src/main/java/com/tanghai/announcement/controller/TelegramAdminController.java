@@ -37,7 +37,7 @@ public class TelegramAdminController {
     }
 
     /** Delete webhook and clear pending updates */
-    @PostMapping("/delete")
+    @GetMapping("/delete")
     public String deleteWebhook() {
         try {
             telegramComponent.execute(DeleteWebhook.builder().dropPendingUpdates(true).build());
@@ -50,7 +50,7 @@ public class TelegramAdminController {
 
     /** Set or reset webhook */
     //RUN THIS FIRST
-    @PostMapping("/reset")
+    @GetMapping("/reset")
     public String resetWebhook() {
         try {
             String fullUrl = baseUrl + webhookPath;
