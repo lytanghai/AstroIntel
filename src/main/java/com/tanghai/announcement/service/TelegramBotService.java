@@ -28,16 +28,12 @@ public class TelegramBotService {
     }
 
     private String processCommand(String user, String command) {
-        if(Commander.isValid(command)) {
-            switch (command) {
-                case "/start": return "Greetings, " + user + "! Astro Bot at your service!";
-                case "/ping": return "Astro Bot is up and healthy!";
-                case "/economic-calendar": return Formatter.formatForexCalendar(ForexService.economicCalendar());
-                case "/help": return "Commands:\n/start\n/ping\n/help";
-                default: return "Unknown command: " + command;
-            }
-        } else {
-            return "Invalid command!";
+        switch (command) {
+            case "/start": return "Greetings, " + user + "! Astro Bot at your service!";
+            case "/ping": return "Astro Bot is up and healthy!";
+            case "/economic-calendar": return Formatter.formatForexCalendar(ForexService.economicCalendar());
+            case "/help": return "Commands:\n/start\n/ping\n/help";
+            default: return "Unknown command: " + command;
         }
     }
 }
