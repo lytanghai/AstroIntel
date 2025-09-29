@@ -1,49 +1,63 @@
 package com.tanghai.announcement.controller;
 
-import com.tanghai.announcement.component.TelegramPollingBot;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.tanghai.announcement.component.TelegramComponent;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
 import org.telegram.telegrambots.meta.api.methods.updates.DeleteWebhook;
 import org.telegram.telegrambots.meta.api.methods.updates.GetWebhookInfo;
+import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.WebhookInfo;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @RestController
+@RequestMapping("/telegram/webhook")
 public class TelegramAdminController {
 
-    private final TelegramPollingBot bot;
+    private final TelegramComponent telegramComponent;
+    private final String baseUrl;
+    private final String webhookPath;
 
-    public TelegramAdminController(TelegramPollingBot bot) {
-        this.bot = bot;
+    public TelegramAdminController(TelegramComponent telegramComponent,
+                                   @Value("${app.base-url}") String baseUrl,
+                                   @Value("${telegram.bot.webhook-path}") String webhookPath) {
+        this.telegramComponent = telegramComponent;
+        this.baseUrl = baseUrl;
+        this.webhookPath = webhookPath;
     }
 
-    // Manually clear webhook + drop pending updates
-    @PostMapping("/telegram/delete-pending-webhook")
-    public String clearUpdates() {
+    /** Get current webhook info */
+    @GetMapping("/status")
+    public WebhookInfo getWebhookInfo() {
         try {
-            bot.execute(DeleteWebhook.builder()
-                    .dropPendingUpdates(true)
-                    .build());
-
-            return "✅ Webhook deleted & all pending updates cleared!";
+            return telegramComponent.execute(new GetWebhookInfo());
         } catch (TelegramApiException e) {
             e.printStackTrace();
-            return "❌ Failed: " + e.getMessage();
+            return null;
         }
     }
 
-    // Check webhook status
-    @GetMapping("/telegram/status")
-    public String getWebhookStatus() {
+    /** Delete webhook and clear pending updates */
+    @PostMapping("/delete")
+    public String deleteWebhook() {
         try {
-            WebhookInfo info = bot.execute(new GetWebhookInfo());
-            return "ℹ️ Webhook URL: " + info.getUrl() +
-                   "\nPending updates: " + info.getPendingUpdatesCount() +
-                   "\nLast error: " + info.getLastErrorMessage();
+            telegramComponent.execute(DeleteWebhook.builder().dropPendingUpdates(true).build());
+            return "✅ Webhook deleted & pending updates cleared!";
         } catch (TelegramApiException e) {
             e.printStackTrace();
-            return "❌ Failed: " + e.getMessage();
+            return "❌ Failed to delete webhook: " + e.getMessage();
+        }
+    }
+
+    /** Set or reset webhook */
+    @PostMapping("/reset")
+    public String resetWebhook() {
+        try {
+            String fullUrl = baseUrl + webhookPath;
+            telegramComponent.execute(SetWebhook.builder().url(fullUrl).build());
+            return "✅ Webhook reset to: " + fullUrl;
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            return "❌ Failed to reset webhook: " + e.getMessage();
         }
     }
 }

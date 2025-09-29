@@ -3,11 +3,13 @@ spring:
     name: announcement
 
 telegram:
-  botToken: ${TELEGRAM_BOT_TOKEN}
-  botUsername: ${TELEGRAM_BOT_USERNAME}
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN}
+    username: ${TELEGRAM_BOT_USERNAME}
+    webhook-path: /telegram/webhook
 
 app:
-  base-url: https://astrointel.onrender.com
+  base-url: https://astrointel.onrender.com  # your Render domain
 
 server:
   port: 8080
