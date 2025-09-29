@@ -53,7 +53,7 @@ public class TelegramComponent extends TelegramWebhookBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String chatId = update.getMessage().getChatId().toString();
             String command = update.getMessage().getText();
-            String reply = telegramBotService.processCommandText(command);
+            String reply = telegramBotService.handleUpdate(update);
 
             return SendMessage.builder()
                     .chatId(chatId)

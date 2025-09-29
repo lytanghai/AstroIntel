@@ -15,8 +15,12 @@ public class TelegramBotService {
         this.telegramComponent = telegramComponent;
     }
 
-    /** Main entry point from controller */
-    public void handleUpdate(Update update) {
+    /**
+     * Main entry point from controller
+     *
+     * @return
+     */
+    public String handleUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String chatId = update.getMessage().getChatId().toString();
             String text = update.getMessage().getText();
@@ -27,6 +31,7 @@ public class TelegramBotService {
             // Send reply
             sendMessage(chatId, reply);
         }
+        return null;
     }
 
     /** Business logic for commands */
