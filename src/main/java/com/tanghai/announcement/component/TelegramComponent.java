@@ -49,10 +49,11 @@ public class TelegramComponent extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
+        logger.info("Message Received!");
         if (update.hasMessage() && update.getMessage().hasText()) {
             String chatId = update.getMessage().getChatId().toString();
             String command = update.getMessage().getText();
-            logger.info("Received {} {}", update.getMessage().getChatId().toString(), update.getMessage().getText());
+            logger.info("Chat Id: {} Command:{}", update.getMessage().getChatId().toString(), update.getMessage().getText());
             String reply = telegramBotService.processCommandText(command);
             SendMessage message = new SendMessage(chatId, reply);
             try {
