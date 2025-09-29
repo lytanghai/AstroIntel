@@ -2,6 +2,7 @@ package com.tanghai.announcement.service.internet;
 
 import com.tanghai.announcement.cache.ForexCalendarCache;
 import com.tanghai.announcement.dto.resp.ForexCalendarResp;
+import com.tanghai.announcement.dto.resp.GoldApiResp;
 import com.tanghai.announcement.utilz.DateUtilz;
 import com.tanghai.announcement.utilz.ExternalAPI;
 import org.json.JSONArray;
@@ -52,4 +53,15 @@ public class ForexService {
         return responseList;
     }
 
+    public static String goldApiResp() {
+        RestTemplate restTemplate = new RestTemplate();
+        GoldApiResp resultStr = restTemplate.getForObject(ExternalAPI.GOLD_PRICE, GoldApiResp.class);
+
+        if(resultStr != null) {
+            resultStr.setUpdatedAt(DateUtilz.toPhnomPenhTime(resultStr.getUpdatedAt()).replaceAll("ICT", ""));
+            return resultStr.toString();
+        } else {
+            return null;
+        }
+    }
 }
