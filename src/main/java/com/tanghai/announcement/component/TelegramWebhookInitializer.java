@@ -1,5 +1,7 @@
 package com.tanghai.announcement.component;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
@@ -10,6 +12,7 @@ import javax.annotation.PostConstruct;
 @Component
 public class TelegramWebhookInitializer {
 
+    private static final Logger log = LoggerFactory.getLogger(TelegramWebhookInitializer.class);
     private final TelegramComponent telegramComponent;
 
     @Value("${app.base-url}")
@@ -25,10 +28,11 @@ public class TelegramWebhookInitializer {
     @PostConstruct
     public void initWebhook() {
         try {
-            String fullWebhookUrl = baseUrl + webhookPath;
+            String fullWebhookUrl = baseUrl + "/telegram/webhook/callback/telegram/webhook";
             SetWebhook setWebhook = SetWebhook.builder().url(fullWebhookUrl).build();
             telegramComponent.setWebhook(setWebhook);
-            System.out.println("✅ Webhook set to: " + fullWebhookUrl);
+            log.info("Successfully set webhook url: {} ", setWebhook.getUrl());
+            log.info("Webhook URL: {}", fullWebhookUrl);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
