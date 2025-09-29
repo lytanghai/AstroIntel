@@ -21,7 +21,7 @@ public class TelegramBotConfig {
     public void registerBot() {
         try {
             // Step 1: Delete webhook (avoid 409 conflict)
-            bot.execute(new DeleteWebhook());
+            bot.execute(DeleteWebhook.builder().dropPendingUpdates(true).build());
             System.out.println("✅ Webhook deleted (polling mode enabled)");
 
             // Step 2: Register bot for polling

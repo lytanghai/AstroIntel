@@ -25,4 +25,17 @@ public class TelegramWebhookController {
             return "Failed to delete webhook: " + e.getMessage();
         }
     }
+    @PostMapping("/telegram/delete-pending-webhook")
+    public String clearUpdates() {
+        try {
+            bot.execute(DeleteWebhook.builder()
+                    .dropPendingUpdates(true) // this clears pending updates
+                    .build());
+
+            return "✅ Webhook deleted & all pending updates cleared!";
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            return "❌ Failed: " + e.getMessage();
+        }
+    }
 }
