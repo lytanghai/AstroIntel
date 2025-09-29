@@ -15,6 +15,11 @@ public class TelegramWebhookController {
         this.manager = manager;
     }
 
+    @GetMapping("/health/check")
+    public String healthCheck() {
+        return "OK";
+    }
+
     @GetMapping("/info")
     public WebhookInfo getInfo() throws TelegramApiException {
         return manager.getWebhookInfo();

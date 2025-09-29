@@ -23,7 +23,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
  * */
 
 @RestController
-@RequestMapping("/telegram/webhook")
 public class TelegramController {
 
     private final Logger  logger = LoggerFactory.getLogger(TelegramController.class);
@@ -34,12 +33,7 @@ public class TelegramController {
         this.telegramBot = telegramBot;
     }
 
-    @GetMapping("/health/check")
-    public String healthCheck() {
-        return "OK";
-    }
-
-    @PostMapping
+    @PostMapping("/callback")
     public void receiveUpdate(@RequestBody Update update) {
         logger.info("Received Update {}", update.getUpdateId());
         telegramBot.onWebhookUpdateReceived(update);
