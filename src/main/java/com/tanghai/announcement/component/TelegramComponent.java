@@ -9,28 +9,27 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
 public class TelegramComponent extends TelegramWebhookBot {
 
-    private final Logger  logger = LoggerFactory.getLogger(TelegramComponent.class);
-
     private final TelegramBotService telegramBotService;
-    private final String botToken;
-    private final String botUsername;
-    private final String botPath;
 
-    public TelegramComponent(TelegramBotService telegramBotService,
-                             @Value("${telegram.bot.token}") String botToken,
-                             @Value("${telegram.bot.username}") String botUsername,
-                             @Value("${telegram.bot.webhook-path}") String botPath) {
+    public TelegramComponent(TelegramBotService telegramBotService) {
         this.telegramBotService = telegramBotService;
-        this.botToken = botToken;
-        this.botUsername = botUsername;
-        this.botPath = botPath;
     }
+
+    @Value("${telegram.bot.token}")
+    private String botToken;
+
+    @Value("${telegram.bot.username}")
+    private String botUsername;
+
+    @Value("${telegram.bot.webhook-path:/telegram/webhook}")
+    private String botPath;
 
     @Override
     public String getBotToken() {
@@ -49,20 +48,27 @@ public class TelegramComponent extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        logger.info("Message Received!");
+        System.out.println("Message Received!");
         if (update.hasMessage() && update.getMessage().hasText()) {
             String chatId = update.getMessage().getChatId().toString();
             String command = update.getMessage().getText();
-            logger.info("Chat Id: {} Command:{}", update.getMessage().getChatId().toString(), update.getMessage().getText());
-            String reply = telegramBotService.processCommandText(command);
-            SendMessage message = new SendMessage(chatId, reply);
-            try {
-                execute(message);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
+            System.out.println("Chat Id: " + chatId + " Command: " + command);
+
+            if (Commander.isValid(command)) {
+                String reply = telegramBotService.processCommandText(command);
+                SendMessage message = new SendMessage(chatId, reply);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return null;
     }
 
+    @Override
+    public void setWebhook(SetWebhook setWebhook) throws TelegramApiException {
+        super.setWebhook(setWebhook);
+    }
 }
