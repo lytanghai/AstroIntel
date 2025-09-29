@@ -25,7 +25,7 @@ public class TelegramWebhookInitializer {
     @PostConstruct
     public void initWebhook() {
         try {
-            String webhookUrl = baseUrl + webhookPath;
+            String webhookUrl = baseUrl + "/telegram/webhook";
             SetWebhook setWebhook = SetWebhook.builder().url(webhookUrl).build();
             telegramComponent.setWebhook(setWebhook);
             System.out.println("✅ Webhook set to: " + webhookUrl);
