@@ -7,6 +7,8 @@ import com.tanghai.announcement.utilz.DateUtilz;
 import com.tanghai.announcement.utilz.ExternalAPI;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,6 +20,7 @@ import java.util.List;
 public class ForexService {
 
     private static final ForexCalendarCache cache = new ForexCalendarCache();
+    private static final Logger log = LoggerFactory.getLogger(ForexService.class);
 
     public static List<ForexCalendarResp> economicCalendar() {
 
@@ -53,14 +56,15 @@ public class ForexService {
         return responseList;
     }
 
-    public static String goldApiResp() {
+    public static GoldApiResp goldApiResp() {
         RestTemplate restTemplate = new RestTemplate();
         GoldApiResp resultStr = restTemplate.getForObject(ExternalAPI.GOLD_PRICE, GoldApiResp.class);
 
         if(resultStr != null) {
             resultStr.setUpdatedAt(DateUtilz.toPhnomPenhTime(resultStr.getUpdatedAt()).replaceAll("ICT", ""));
-            return resultStr.toString();
+            return resultStr;
         } else {
+            log.info("result is null");
             return null;
         }
     }

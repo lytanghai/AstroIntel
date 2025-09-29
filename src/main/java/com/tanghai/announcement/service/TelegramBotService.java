@@ -31,7 +31,7 @@ public class TelegramBotService {
             case "/start": return "Greetings, " + user + "! Astro Bot at your service!";
             case "/ping": return "Astro Bot is up and healthy!";
             case "/calendar": return Formatter.formatForexCalendar(ForexService.economicCalendar());
-            case "/gold": return ForexService.goldApiResp();
+            case "/gold": return Formatter.formatGoldPrice(ForexService.goldApiResp());
             case "/help": return "Commands:\n/start\n/ping\n/help";
             default: return "Unknown command: " + command;
         }

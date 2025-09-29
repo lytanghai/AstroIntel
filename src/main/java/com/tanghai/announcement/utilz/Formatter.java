@@ -1,6 +1,7 @@
 package com.tanghai.announcement.utilz;
 
 import com.tanghai.announcement.dto.resp.ForexCalendarResp;
+import com.tanghai.announcement.dto.resp.GoldApiResp;
 
 import java.util.List;
 
@@ -22,9 +23,18 @@ public class Formatter {
         return sb.toString().trim();
     }
 
-    private static String truncate(String text, int maxLength) {
-        if (text == null) return "";
-        if (text.length() <= maxLength) return text;
-        return text.substring(0, maxLength - 3) + "...";
+    public static String formatGoldPrice(GoldApiResp gold) {
+        if(gold != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("💰 *").append(gold.getName()).append("*\n")
+                    .append("💵 Price: `").append(gold.getPrice()).append(" USD`\n")
+                    .append("🔹 Symbol: `").append(gold.getSymbol()).append("`\n")
+                    .append("⏱ Updated: ").append(gold.getUpdatedAtReadable());
+
+            return sb.toString();
+        } else {
+            return null;
+        }
+
     }
 }
