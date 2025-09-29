@@ -1,6 +1,9 @@
 package com.tanghai.announcement.service;
 
 import com.tanghai.announcement.component.TelegramSender;
+import com.tanghai.announcement.service.internet.ForexService;
+import com.tanghai.announcement.utilz.Commander;
+import com.tanghai.announcement.utilz.Formatter;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -8,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class TelegramBotService {
 
     private final TelegramSender telegramSender;
+    private ForexService forexService;
 
     public TelegramBotService(TelegramSender telegramSender) {
         this.telegramSender = telegramSender;
@@ -15,21 +19,25 @@ public class TelegramBotService {
 
     public void handleUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            String chatId = update.getMessage().getChatId().toString();
-            String command = update.getMessage().getText();
+            String username = update.getMessage().getFrom().getUserName(); // may be null
+            String user = (username != null ? "@" + username :  update.getMessage().getFrom().getFirstName());
+            String reply = processCommand(user, update.getMessage().getText());
 
-            String reply = processCommand(command);
-
-            telegramSender.send(chatId, reply);
+            telegramSender.send(update.getMessage().getChatId().toString(), reply);
         }
     }
 
-    private String processCommand(String command) {
-        switch (command) {
-            case "/start": return "Hello! I’m your bot 🤖";
-            case "/ping": return "Pong!";
-            case "/help": return "Commands:\n/start\n/ping\n/help";
-            default: return "Unknown command: " + command;
+    private String processCommand(String user, String command) {
+        if(Commander.isValid(command)) {
+            switch (command) {
+                case "/start": return "Greetings, " + user + "! Astro Bot at your service!";
+                case "/ping": return "Astro Bot is up and healthy!";
+                case "/economic-calendar": return Formatter.formatForexCalendar(ForexService.economicCalendar());
+                case "/help": return "Commands:\n/start\n/ping\n/help";
+                default: return "Unknown command: " + command;
+            }
+        } else {
+            return "Invalid command!";
         }
     }
 }

@@ -8,7 +8,7 @@ public class Commander {
             Set.of(
                     "/start",
                     "/ping",
-                    ""
+                    "/economic-calendar"
             );
 
     public static boolean isValid(String command) {
