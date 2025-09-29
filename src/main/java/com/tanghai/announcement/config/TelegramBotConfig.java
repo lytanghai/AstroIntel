@@ -4,6 +4,8 @@ import com.tanghai.announcement.component.TelegramPollingBot;
 import org.springframework.context.annotation.Configuration;
 import javax.annotation.PostConstruct;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.updates.DeleteWebhook;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 @Configuration
@@ -18,10 +20,15 @@ public class TelegramBotConfig {
     @PostConstruct
     public void registerBot() {
         try {
+            // Step 1: Delete webhook (avoid 409 conflict)
+            bot.execute(new DeleteWebhook());
+            System.out.println("✅ Webhook deleted (polling mode enabled)");
+
+            // Step 2: Register bot for polling
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
             botsApi.registerBot(bot);
-            System.out.println("Polling bot registered successfully!");
-        } catch (Exception e) {
+            System.out.println("🤖 Polling bot registered successfully!");
+        } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
