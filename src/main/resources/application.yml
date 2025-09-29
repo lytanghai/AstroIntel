@@ -3,10 +3,8 @@ spring:
     name: announcement
 
 telegram:
-  bot:
-    token: ${TELEGRAM_BOT_TOKEN}
-    username: ${TELEGRAM_BOT_USERNAME}
-    webhook-path: /telegram/webhook
+  botToken: ${TELEGRAM_BOT_TOKEN}
+  botUsername: ${TELEGRAM_BOT_USERNAME}
 
 app:
   base-url: https://astrointel.onrender.com
