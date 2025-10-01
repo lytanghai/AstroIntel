@@ -48,11 +48,11 @@ public class TelegramBotService {
                         "❌ /unsubscribe \\- Stop receiving alerts and announcements\n\n" +
                         "_Use the commands exactly as shown above._";
 
-            case "subscribe": gistService.subscribeToGist(chatId);
+            case "/subscribe": gistService.subscribeToGist(chatId);
                 return "✅ *Subscription Successful!*\n\n" +
                         "You will now receive important alerts and announcements.";
 
-            case "unsubscribe": gistService.unSubscribeToGist(chatId);
+            case "/unsubscribe": gistService.unSubscribeToGist(chatId);
                 return "❌ *Unsubscription Successful!*\n\n" +
                         "You will no longer receive alerts and announcements.";
 
