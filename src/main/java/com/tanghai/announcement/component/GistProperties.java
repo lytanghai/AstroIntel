@@ -1,12 +1,16 @@
 package com.tanghai.announcement.component;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "gist")
 public class GistProperties {
+
+    @Value("${GITHUB_TOKEN}")
     private String githubToken;
+
+    @Value("${GIST_ID}")
     private String gistId;
 
     public String getGithubToken() { return githubToken; }

@@ -58,6 +58,10 @@ public class GistService {
         }
 
         HttpEntity<Void> entity = new HttpEntity<>(getHeaders());
+
+        log.info("Token ID {}", properties.getGithubToken().length());
+        log.info("Gist ID {}", properties.getGistId().length());
+
         ResponseEntity<Map> response = restTemplate.exchange(
                 TelegramConst.GIST_BASE_URL + properties.getGistId(),
                 HttpMethod.GET,
