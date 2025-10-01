@@ -135,8 +135,8 @@ public class GistService {
 
 //    public static void main(String[] args) {
 //        GistProperties properties = new GistProperties();
-//        properties.setGithubToken("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"); // make sure env variable is set
-//        properties.setGistId("fb818bb69726ec3afb492097596a5cdd");            // set your Gist ID
+//        properties.setGithubToken(""); // make sure env variable is set
+//        properties.setGistId("");            // set your Gist ID
 //
 //        // 2️⃣ Create GistService manually
 //        GistService gistService = new GistService(properties);
