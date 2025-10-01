@@ -37,6 +37,7 @@ public class GistService {
         headers.set("Authorization", properties.getGithubToken().trim());
         headers.setAccept(MediaType.parseMediaTypes("application/vnd.github.v3+json"));
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("User-Agent", "AstroApp");
 
         return headers;
     }
