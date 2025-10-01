@@ -35,6 +35,7 @@ public class GoldPriceWebSocketService {
                 public void onMessage(String message) {
                     try {
                         JsonNode json = objectMapper.readTree(message);
+                        System.out.println("Fetched");
                         if (json.has("data")) {
                             JsonNode data = json.get("data").get(0);
                             double price = data.get("last_price").asDouble();
@@ -49,7 +50,14 @@ public class GoldPriceWebSocketService {
                 @Override
                 public void onClose(int code, String reason, boolean remote) {
                     System.out.println("WebSocket closed, reconnecting...");
-                    reconnect();
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(2000); // optional: small delay before reconnect
+                            connect(); // your method that creates a new WebSocketClient
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
                 }
 
                 @Override
