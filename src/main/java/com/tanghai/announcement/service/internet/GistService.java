@@ -93,11 +93,14 @@ public class GistService {
 
     public void updateGistContent(Map<String, Object> updatedContent) {
         try {
-            String jsonString = objectMapper.writeValueAsString(updatedContent);
-            String bodyJson = objectMapper.writeValueAsString(Map.of(
-                    TelegramConst.FILES,
-                    Map.of(TelegramConst.GIST_FILE, Map.of(TelegramConst.CONTENT, jsonString))
-            ));
+            String innerContent = objectMapper.writeValueAsString(updatedContent);
+            Map<String, Object> filesMap = Map.of(
+                    TelegramConst.DATA_JSON, Map.of(TelegramConst.CONTENT, innerContent)
+            );
+            Map<String, Object> bodyMap = Map.of(
+                    TelegramConst.FILES, filesMap
+            );
+            String bodyJson = objectMapper.writeValueAsString(bodyMap);
 
             // Create HttpClient
             try (CloseableHttpClient client = HttpClients.createDefault()) {
