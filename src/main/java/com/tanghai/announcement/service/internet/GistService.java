@@ -6,7 +6,6 @@ import com.tanghai.announcement.constant.TelegramConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -105,7 +104,6 @@ public class GistService {
         }
     }
 
-    @Async
     public void subscribeToGist(String chatId) {
         Map<String, Object> json = getGistContent();
 
@@ -122,7 +120,6 @@ public class GistService {
         updateGistContent(json);
     }
 
-    @Async
     public void unSubscribeToGist(String chatId) {
         Map<String, Object> json = getGistContent();
 
