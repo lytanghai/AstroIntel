@@ -31,6 +31,24 @@ public class GeneralAlert {
         "⏰ Reopens: Monday 05:00 AM (Phnom Penh time)\n" +
         "🎉 Happy Weekend!";
 
+    private static final String ASIA_SESSION_MSG =
+            "🌏 *Asia Session Alert*\n\n" +
+            "📢 The Asia trading session has started.\n" +
+            "⏰ Trading hours: 01:00 AM – 10:00 AM GMT\n" +
+            "💡 Watch out for volatility in Asian markets!";
+
+    private static final String LONDON_SESSION_MSG =
+            "🇬🇧 *London Session Alert*\n\n" +
+            "📢 The London trading session has started.\n" +
+            "⏰ Trading hours: 08:00 AM – 05:00 PM GMT\n" +
+            "💡 Expect increased activity in gold and forex markets!";
+
+    private static final String NEW_YORK_SESSION_MSG =
+            "🇺🇸 *New York Session Alert*\n\n" +
+            "📢 The New York trading session has started.\n" +
+            "⏰ Trading hours: 01:00 PM – 10:00 PM GMT\n" +
+            "💡 Major economic news may impact gold prices!";
+
     /** Fetch subscribed chat IDs from Gist and send message to each */
     private void sendToAllSubscribers(String message) {
         Map<String, Object> json = gistService.getGistContent();
@@ -55,4 +73,38 @@ public class GeneralAlert {
     void marketClose() {
         sendToAllSubscribers(MARKET_CLOSE_MSG);
     }
+
+    // Asia Session (Tokyo): 7:00 AM – 4:00 PM
+    @Scheduled(cron = "0 0 7 ? * MON-FRI", zone = "Asia/Phnom_Penh")
+    void asiaSessionOpen() {
+        sendToAllSubscribers(ASIA_SESSION_MSG);
+    }
+
+    @Scheduled(cron = "0 0 16 ? * MON-FRI", zone = "Asia/Phnom_Penh")
+    void asiaSessionClose() {
+        sendToAllSubscribers("🌏 *Asia Session Closed* ⏰ 16:00:00 Phnom Penh time");
+    }
+
+    // London Session: 2:00 PM – 11:00 PM
+    @Scheduled(cron = "0 0 14 ? * MON-FRI", zone = "Asia/Phnom_Penh")
+    void londonSessionOpen() {
+        sendToAllSubscribers(LONDON_SESSION_MSG);
+    }
+
+    @Scheduled(cron = "0 0 23 ? * MON-FRI", zone = "Asia/Phnom_Penh")
+    void londonSessionClose() {
+        sendToAllSubscribers("🇬🇧 *London Session Closed* ⏰ 23:00:00 Phnom Penh time");
+    }
+
+    // New York Session: 8:00 PM – 5:00 AM (next day)
+    @Scheduled(cron = "0 0 20 ? * MON-FRI", zone = "Asia/Phnom_Penh")
+    void newYorkSessionOpen() {
+        sendToAllSubscribers(NEW_YORK_SESSION_MSG);
+    }
+
+    @Scheduled(cron = "0 0 5 ? * TUE-SAT", zone = "Asia/Phnom_Penh") // next day close
+    void newYorkSessionClose() {
+        sendToAllSubscribers("🇺🇸 *New York Session Closed* ⏰ 05:00:00 Phnom Penh time");
+    }
+
 }
