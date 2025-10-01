@@ -133,28 +133,4 @@ public class GistService {
         updateGistContent(json);
     }
 
-//    public static void main(String[] args) {
-//        GistProperties properties = new GistProperties();
-//        properties.setGithubToken(""); // make sure env variable is set
-//        properties.setGistId("");            // set your Gist ID
-//
-//        // 2️⃣ Create GistService manually
-//        GistService gistService = new GistService(properties);
-//
-//        String chatId = "123123"; // test chat ID
-//
-//        // 3️⃣ Add chat ID
-//      System.out.println("Adding chat ID: " + chatId);
-//      gistService.subscribeToGist(chatId);
-//
-//       // 4️⃣ Verify JSON after adding
-//        System.out.println("JSON after add: " + gistService.getGistContent());
-//
-//        // 5️⃣ Remove chat ID
-//        System.out.println("Removing chat ID: " + chatId);
-//        gistService.removeChatId(chatId);
-//
-//        // 6️⃣ Verify JSON after removal
-//        System.out.println("JSON after remove: " + gistService.getGistContent());
-//    }
 }
