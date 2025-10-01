@@ -34,11 +34,9 @@ public class GistService {
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", properties.getGithubToken());
+        headers.set("Authorization", properties.getGithubToken().trim());
         headers.setAccept(MediaType.parseMediaTypes("application/vnd.github.v3+json"));
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        log.info("Token ID {}", properties.getGithubToken().substring(0, 10));
 
         return headers;
     }
