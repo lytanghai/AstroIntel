@@ -93,7 +93,7 @@ public class GistService {
                     TelegramConst.FILES, Map.of(TelegramConst.GIST_FILE, Map.of(TelegramConst.CONTENT, jsonString))
             );
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, getHeaders());
-            restTemplate.exchange(TelegramConst.GIST_BASE_URL + properties.getGistId(), HttpMethod.POST, entity, Map.class);
+            restTemplate.exchange(TelegramConst.GIST_BASE_URL + properties.getGistId(), HttpMethod.PATCH, entity, Map.class);
 
             // Clear cache after update
             cachedGist = null;
