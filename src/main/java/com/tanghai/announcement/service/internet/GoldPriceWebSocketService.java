@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class GoldPriceWebSocketService {
 
     private static final Logger log = LoggerFactory.getLogger(GoldPriceWebSocketService.class);
-    private static final String BYBIT_WS_URL = "wss://stream.bybit.com/realtime";
+    private static final String BYBIT_WS_URL = "wss://stream.bybit.com/realtime_public";
 
     private final GistService gistService;
     private final OkHttpClient client;
