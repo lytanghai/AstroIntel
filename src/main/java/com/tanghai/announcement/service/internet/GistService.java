@@ -3,6 +3,11 @@ package com.tanghai.announcement.service.internet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tanghai.announcement.component.GistProperties;
 import com.tanghai.announcement.constant.TelegramConst;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -89,15 +94,37 @@ public class GistService {
     public void updateGistContent(Map<String, Object> updatedContent) {
         try {
             String jsonString = objectMapper.writeValueAsString(updatedContent);
-            Map<String, Object> body = Map.of(
-                    TelegramConst.FILES, Map.of(TelegramConst.GIST_FILE, Map.of(TelegramConst.CONTENT, jsonString))
-            );
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, getHeaders());
-            restTemplate.exchange(TelegramConst.GIST_BASE_URL + properties.getGistId(), HttpMethod.PATCH, entity, Map.class);
-            log.info("Freshly updated successfully");
-            // Clear cache after update
-            cachedGist = null;
-            cacheTime = Instant.EPOCH;
+            String bodyJson = objectMapper.writeValueAsString(Map.of(
+                    TelegramConst.FILES,
+                    Map.of(TelegramConst.GIST_FILE, Map.of(TelegramConst.CONTENT, jsonString))
+            ));
+
+            // Create HttpClient
+            try (CloseableHttpClient client = HttpClients.createDefault()) {
+                HttpPatch patch = new HttpPatch(TelegramConst.GIST_BASE_URL + properties.getGistId());
+
+                // Set headers
+                patch.setHeader("Authorization", "token " + properties.getGithubToken().trim());
+                patch.setHeader("Accept", "application/vnd.github.v3+json");
+                patch.setHeader("Content-Type", "application/json");
+                patch.setHeader("User-Agent", "AstroApp");
+
+                // Set request body
+                patch.setEntity(new StringEntity(bodyJson));
+
+                // Execute PATCH
+                HttpResponse response = client.execute(patch);
+
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode >= 200 && statusCode < 300) {
+                    log.info("Freshly updated successfully");
+                    // Clear cache after update
+                    cachedGist = null;
+                    cacheTime = Instant.EPOCH;
+                } else {
+                    throw new RuntimeException("Failed to update Gist, HTTP code: " + statusCode);
+                }
+            }
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to update gist JSON", e);
