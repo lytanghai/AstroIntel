@@ -1,13 +1,11 @@
 spring:
-#  profiles:
-#    active: local
   application:
     name: announcement
 
 telegram:
   bot:
-    token: ${TELEGRAM_BOT_TOKEN}
-    username: ${TELEGRAM_BOT_USERNAME}
+    token: 123
+    username: 123
     webhook-path: /telegram/webhook
 
 app:
@@ -16,6 +14,7 @@ app:
 server:
   port: 8080
 
+
 gist:
-  github-token: ${GITHUB_TOKEN}
-  gist-id: ${GIST_ID}
+  github-token: N/A
+  gist-id: N/A
