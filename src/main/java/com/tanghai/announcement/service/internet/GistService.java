@@ -57,7 +57,6 @@ public class GistService {
         return cachedGist != null && Instant.now().minusMillis(CACHE_TTL_MS).isBefore(cacheTime);
     }
 
-
     public Map<String, Object> getGistContent() {
         if (cachedGist != null && Instant.now().minusMillis(CACHE_TTL_MS).isBefore(cacheTime)) {
             log.info("Gist cache is available");
@@ -76,7 +75,7 @@ public class GistService {
         );
 
         Map files = (Map) response.getBody().get(TelegramConst.FILES);
-        Map file = (Map) files.get(TelegramConst.GIST_FILE);
+        Map file = (Map) files.get(TelegramConst.DATA_JSON);
         String content = (String) file.get(TelegramConst.CONTENT);
 
         try {
