@@ -76,7 +76,7 @@ public class GistService {
 
         try {
             Map<String, Object> json = objectMapper.readValue(content, Map.class);
-            log.info("Gist cache is not available!");
+            log.info("Gist cache is not available! Freshly fetch successfully");
             cachedGist = json;
             cacheTime = Instant.now();
 
@@ -94,7 +94,7 @@ public class GistService {
             );
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, getHeaders());
             restTemplate.exchange(TelegramConst.GIST_BASE_URL + properties.getGistId(), HttpMethod.PATCH, entity, Map.class);
-
+            log.info("Freshly updated successfully");
             // Clear cache after update
             cachedGist = null;
             cacheTime = Instant.EPOCH;
