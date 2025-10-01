@@ -14,9 +14,8 @@ public class Formatter {
             sb.append("📅 ").append(e.getDate()).append("\n")
                     .append("💡 ").append(e.getTitle()).append("\n")
                     .append("🌐 ").append(e.getCountry()).append(" | Impact: ").append(e.getImpact()).append("\n")
-                    .append("📊 Forecast: ").append(e.getForecast() != null ? e.getForecast() : "-")
                     .append(" | Previous: ").append(e.getPrevious() != null ? e.getPrevious() : "-")
-                    .append(" | Actual: ").append(e.getActual() != null ? e.getActual() : "-")
+                    .append("📊 Forecast: ").append(e.getForecast() != null ? e.getForecast() : "-")
                     .append("\n\n");
         }
 
@@ -26,15 +25,13 @@ public class Formatter {
     public static String formatGoldPrice(GoldApiResp gold) {
         if(gold != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("💰 *").append(gold.getName()).append("*\n")
+            sb.append("💰 *").append(gold.getName()).append("|").append(gold.getSymbol()).append("*\n")
                     .append("💵 Price: `").append(gold.getPrice()).append(" USD`\n")
-                    .append("🔹 Symbol: `").append(gold.getSymbol()).append("`\n")
-                    .append("⏱ Updated: ").append(gold.getUpdatedAtReadable());
+                    .append("⏱ Last Updated: ").append(gold.getUpdatedAt());
 
             return sb.toString();
         } else {
             return null;
         }
-
     }
 }

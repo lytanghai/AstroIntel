@@ -34,19 +34,19 @@ public class GeneralAlert {
     private static final String ASIA_SESSION_MSG =
             "🌏 *Asia Session Alert*\n\n" +
             "📢 The Asia trading session has started.\n" +
-            "⏰ Trading hours: 01:00 AM – 10:00 AM GMT\n" +
+            "⏰ Trading hours: 07:00 AM – 04:00 PM GMT\n" +
             "💡 Watch out for volatility in Asian markets!";
 
     private static final String LONDON_SESSION_MSG =
             "🇬🇧 *London Session Alert*\n\n" +
             "📢 The London trading session has started.\n" +
-            "⏰ Trading hours: 08:00 AM – 05:00 PM GMT\n" +
+            "⏰ Trading hours: 02:00 PM – 11:00 PM GMT\n" +
             "💡 Expect increased activity in gold and forex markets!";
 
     private static final String NEW_YORK_SESSION_MSG =
             "🇺🇸 *New York Session Alert*\n\n" +
             "📢 The New York trading session has started.\n" +
-            "⏰ Trading hours: 01:00 PM – 10:00 PM GMT\n" +
+            "⏰ Trading hours: 08:00 PM – 05:00 AM GMT\n" +
             "💡 Major economic news may impact gold prices!";
 
     /** Fetch subscribed chat IDs from Gist and send message to each */
