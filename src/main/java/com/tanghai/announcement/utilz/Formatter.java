@@ -18,16 +18,25 @@ public class Formatter {
                     .append("📊 Forecast: ").append(e.getForecast() != null ? e.getForecast() : "-")
                     .append("\n\n");
         }
-
         return sb.toString().trim();
+    }
+
+    public static String autoAlertGoldPrice(GoldApiResp gold) {
+        if(gold != null) {
+            return "📢* " + gold.getPrice().toString().substring(0,8);
+        }
+        return null;
     }
 
     public static String formatGoldPrice(GoldApiResp gold) {
         if(gold != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("💰 *").append(gold.getName()).append("|").append(gold.getSymbol()).append("*\n")
-                    .append("💵 Price: `").append(gold.getPrice()).append(" USD`\n")
-                    .append("⏱ Last Updated: ").append(gold.getUpdatedAt());
+            sb.append("💰 *")
+            .append(gold.getName())
+            .append("|")
+            .append(gold.getSymbol()).append("*\n")
+            .append("💵 Price: `").append(gold.getPrice()).append(" USD`\n")
+            .append("⏱ Last Updated: ").append(gold.getUpdatedAt());
 
             return sb.toString();
         } else {

@@ -22,7 +22,7 @@ public class TelegramBotService {
     public void handleUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String chatId = update.getMessage().getChatId().toString();
-            String username = update.getMessage().getFrom().getUserName(); // may be null
+            String username = update.getMessage().getFrom().getUserName();
             String user = (username != null ? "@" + username :  update.getMessage().getFrom().getFirstName());
             String reply = processCommand(
                     chatId,

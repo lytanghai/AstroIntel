@@ -1,7 +1,9 @@
 package com.tanghai.announcement.component;
 
 import com.tanghai.announcement.constant.TelegramConst;
+import com.tanghai.announcement.service.internet.ForexService;
 import com.tanghai.announcement.service.internet.GistService;
+import com.tanghai.announcement.utilz.Formatter;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -62,6 +64,11 @@ public class GeneralAlert {
         for (String chatId : chatIds) {
             telegramSender.send(chatId, message);
         }
+    }
+
+    @Scheduled(cron = "0 0,30 7-23 ? * MON-FRI", zone = "Asia/Phnom_Penh")
+    void alertPrice30Min() {
+        sendToAllSubscribers(Formatter.autoAlertGoldPrice(ForexService.goldApiResp()));
     }
 
     @Scheduled(cron = "0 0 5 ? * MON-FRI", zone = "GMT")
