@@ -3,6 +3,7 @@ package com.tanghai.announcement.service;
 import com.tanghai.announcement.component.TelegramSender;
 import com.tanghai.announcement.service.internet.ForexService;
 import com.tanghai.announcement.service.internet.GistService;
+import com.tanghai.announcement.service.internet.GoldPriceService;
 import com.tanghai.announcement.utilz.Formatter;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -13,10 +14,12 @@ public class TelegramBotService {
     private final TelegramSender telegramSender;
     private ForexService forexService;
     private final GistService gistService;
+    private final GoldPriceService goldPriceService;
 
-    public TelegramBotService(TelegramSender telegramSender, GistService gistService) {
+    public TelegramBotService(TelegramSender telegramSender, GistService gistService, GoldPriceService goldPriceService) {
         this.telegramSender = telegramSender;
         this.gistService = gistService;
+        this.goldPriceService = goldPriceService;
     }
 
     public void handleUpdate(Update update) {
@@ -55,6 +58,8 @@ public class TelegramBotService {
             case "/unsubscribe": gistService.unSubscribeToGist(chatId);
                 return "❌ *Unsubscription Successful!*\n\n" +
                         "You will no longer receive alerts and announcements.";
+
+            case "/trend": return goldPriceService.showTechnicalAnalysis();
 
             default: return "Unknown command: " + command;
         }

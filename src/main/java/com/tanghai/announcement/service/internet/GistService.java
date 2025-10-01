@@ -47,7 +47,6 @@ public class GistService {
         return headers;
     }
 
-
     public void clearCache() {
         cachedGist = null;
         cacheTime = Instant.EPOCH;
