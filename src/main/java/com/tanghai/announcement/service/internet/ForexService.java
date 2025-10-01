@@ -35,44 +35,10 @@ public class ForexService {
         List<ForexCalendarResp> responseList = new ArrayList<>();
         String current = DateUtilz.format(new Date(), "yyyy-MM-dd");
 
-        try {
-            // 2️⃣ Check if economic.json exists in resources
-            ClassPathResource resource = new ClassPathResource("economic.json");
-            if (resource.exists()) {
-                System.out.println("Loading from resources/economic.json");
-                String jsonStr = Files.readString(resource.getFile().toPath(), StandardCharsets.UTF_8);
-                JSONArray result = new JSONArray(jsonStr);
-
-                for (Object i : result) {
-                    JSONObject each = (JSONObject) i;
-                    if (each.optString("date").substring(0, 10).equals(current) &&
-                            each.optString("country").equals("USD")) {
-
-                        ForexCalendarResp eachResp = new ForexCalendarResp();
-                        eachResp.setDate(DateUtilz.toPhnomPenhTime(each.optString("date").replaceAll("ICT", "")));
-                        eachResp.setCountry(each.optString("country"));
-                        eachResp.setForecast(each.optString("forecast"));
-                        eachResp.setImpact(each.optString("impact"));
-                        eachResp.setTitle(each.optString("title"));
-                        eachResp.setPrevious(each.optString("previous"));
-//                        eachResp.setActual(each.optString("actual", null));
-
-                        responseList.add(eachResp);
-                        cache.put(eachResp);
-                    }
-                }
-                return responseList;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Failed to read economic.json, fetching from API...");
-        }
-
         // 3️⃣ If no JSON file or error, fallback to API
         try {
             RestTemplate restTemplate = new RestTemplate();
-//            String resultStr = restTemplate.getForObject(ExternalAPI.CALENDAR_ECONOMIC, String.class);
-            String resultStr = "";
+            String resultStr = restTemplate.getForObject(ExternalAPI.CALENDAR_ECONOMIC, String.class);
             JSONArray result = new JSONArray(resultStr);
 
             for (Object i : result) {
