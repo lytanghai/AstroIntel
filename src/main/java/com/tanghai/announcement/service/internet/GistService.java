@@ -34,7 +34,7 @@ public class GistService {
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(properties.getGithubToken());
+        headers.set("Authorization", "token " + properties.getGithubToken()); // <-- fix here
         headers.setAccept(MediaType.parseMediaTypes("application/vnd.github.v3+json"));
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -42,6 +42,7 @@ public class GistService {
 
         return headers;
     }
+
 
     public void clearCache() {
         cachedGist = null;
