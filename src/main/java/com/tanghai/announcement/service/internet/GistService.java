@@ -38,6 +38,9 @@ public class GistService {
         headers.setBearerAuth(properties.getGithubToken());
         headers.setAccept(MediaType.parseMediaTypes("application/vnd.github.v3+json"));
         headers.setContentType(MediaType.APPLICATION_JSON);
+
+        log.info("Token ID {}", properties.getGithubToken().substring(0, 10));
+
         return headers;
     }
 
@@ -59,8 +62,7 @@ public class GistService {
 
         HttpEntity<Void> entity = new HttpEntity<>(getHeaders());
 
-        log.info("Token ID {}", properties.getGithubToken().length());
-        log.info("Gist ID {}", properties.getGistId().length());
+        log.info("Gist ID {}", properties.getGistId().substring(0, 10));
 
         ResponseEntity<Map> response = restTemplate.exchange(
                 TelegramConst.GIST_BASE_URL + properties.getGistId(),
