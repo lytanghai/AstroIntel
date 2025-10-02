@@ -1,5 +1,6 @@
 package com.tanghai.announcement.service.internet;
 
+import com.tanghai.announcement.constant.MessageConst;
 import com.tanghai.announcement.constant.TelegramConst;
 import com.tanghai.announcement.dto.resp.GoldPrice;
 import com.tanghai.announcement.utilz.DateUtilz;
@@ -70,7 +71,7 @@ public class GoldPriceService {
             // Manual: only read from gist
             reloadHistoryFromGist(calculationPrices);
             if (calculationPrices.isEmpty()) {
-                return "⚠ No historical data found in gist.";
+                return "⚠ No historical data found in gist."  + "\n* " + MessageConst.getRandomQuote();
             }
         } else {
             // Auto: fetch and update
@@ -135,7 +136,8 @@ public class GoldPriceService {
                 .append("Previous Price: ").append(String.format("%.2f", first.getPrice()))
                 .append(" - Current Price: ").append(String.format("%.2f", last.getPrice())).append("\n")
                 .append("Growth: ").append(formatGrowth(longGrowth)).append("\n")
-                .append("Trend: ").append(longTermTrend).append("\n");
+                .append("Trend: ").append(longTermTrend).append("\n")
+                .append("*").append( MessageConst.getRandomQuote());
 
         return sb.toString();
     }

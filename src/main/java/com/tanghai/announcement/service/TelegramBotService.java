@@ -1,6 +1,7 @@
 package com.tanghai.announcement.service;
 
 import com.tanghai.announcement.component.TelegramSender;
+import com.tanghai.announcement.constant.MessageConst;
 import com.tanghai.announcement.service.internet.ForexService;
 import com.tanghai.announcement.service.internet.GistService;
 import com.tanghai.announcement.service.internet.GoldPriceService;
@@ -49,15 +50,18 @@ public class TelegramBotService {
                         "💰 /gold \\- Show the real-time live price of gold\n" +
                         "🔔 /subscribe \\- Receive alerts and important announcements\n" +
                         "❌ /unsubscribe \\- Stop receiving alerts and announcements\n\n" +
-                        "_Use the commands exactly as shown above._";
+                        "* " + MessageConst.getRandomQuote() +
+                        "\n\n_Use the commands exactly as shown above._";
 
             case "/subscribe": gistService.subscribeToGist(chatId);
                 return "✅ *Subscription Successful!*\n\n" +
-                        "You will now receive important alerts and announcements.";
+                        "You will now receive important alerts and announcements.\n\n" +
+                        MessageConst.getRandomQuote();
 
             case "/unsubscribe": gistService.unSubscribeToGist(chatId);
                 return "❌ *Unsubscription Successful!*\n\n" +
-                        "You will no longer receive alerts and announcements.";
+                        "You will no longer receive alerts and announcements. \n\n" +
+                        MessageConst.getRandomQuote();
 
             case "/trend": return goldPriceService.showTechnicalAnalysis(false);
 

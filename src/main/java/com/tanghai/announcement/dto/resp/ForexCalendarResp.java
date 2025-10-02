@@ -7,20 +7,18 @@ public class ForexCalendarResp {
     private String impact;
     private String forecast;
     private String previous;
-    private String actual;
 
     // Constructors
     public ForexCalendarResp() {}
 
     public ForexCalendarResp(String title, String country, String date,
-                             String impact, String forecast, String previous, String actual) {
+                             String impact, String forecast, String previous) {
         this.title = title;
         this.country = country;
         this.date = date;
         this.impact = impact;
         this.forecast = forecast;
         this.previous = previous;
-        this.actual = actual;
     }
 
     public String getTitle() {
@@ -71,17 +69,10 @@ public class ForexCalendarResp {
         this.previous = previous;
     }
 
-    public String getActual() {
-        return actual;
-    }
-
-    public void setActual(String actual) {
-        this.actual = actual;
-    }
 
     @Override
     public String toString() {
-        return String.format("[%s] %s (%s) Impact: %s | Forecast: %s | Previous: %s | Actual: %s",
-                date, title, country, impact, forecast, previous, actual);
+        return String.format("[%s] %s (%s) Impact: %s | Forecast: %s | Previous: %s",
+                date, title, country, impact, forecast, previous);
     }
 }

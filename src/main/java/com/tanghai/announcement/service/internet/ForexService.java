@@ -50,7 +50,6 @@ public class ForexService {
                     eachResp.setImpact(each.optString("impact"));
                     eachResp.setTitle(each.optString("title"));
                     eachResp.setPrevious(each.optString("previous"));
-                    eachResp.setActual(each.optString("actual", null));
 
                     responseList.add(eachResp);
                     cache.put(eachResp);
