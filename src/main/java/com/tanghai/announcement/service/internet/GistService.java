@@ -44,10 +44,6 @@ public class GistService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("User-Agent", "AstroApp");
 
-        if(properties.getGithubToken().trim().length() > 0) {
-            log.info("Token is existed");
-        }
-
         return headers;
     }
 
@@ -71,9 +67,6 @@ public class GistService {
 
         HttpEntity<Void> entity = new HttpEntity<>(getHeaders());
 
-        log.info("Gist ID {}", properties.getGistId().substring(0, 10));
-
-        log.info("url req: {}", TelegramConst.GIST_BASE_URL + properties.getGistId().substring(0, 10));
         ResponseEntity<Map> response = restTemplate.exchange(
                 TelegramConst.GIST_BASE_URL + properties.getGistId(),
                 HttpMethod.GET,
@@ -101,6 +94,7 @@ public class GistService {
 
     public void updateGistContent(Map<String, Object> updatedContent, boolean storeCache, String fileName) {
         try {
+            log.info("updating gist file {}...", fileName);
             String innerContent = objectMapper.writeValueAsString(updatedContent);
             Map<String, Object> filesMap = Map.of(
                     fileName, Map.of(TelegramConst.CONTENT, innerContent)
@@ -125,6 +119,7 @@ public class GistService {
 
                 // Execute PATCH
                 HttpResponse response = client.execute(patch);
+                log.info("updated gist file {} content successfully", fileName);
 
                 int statusCode = response.getStatusLine().getStatusCode();
                     if (statusCode >= 200 && statusCode < 300) {

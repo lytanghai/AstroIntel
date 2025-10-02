@@ -13,7 +13,7 @@ public class KeepAlivePing {
     public void pingSelf() {
         try {
             restTemplate.getForObject("https://astrointel.onrender.com/telegram/webhook/status", String.class);
-            System.out.println("Pinged self to prevent sleep");
+            System.out.println("Pong");
         } catch (Exception e) {
             e.printStackTrace();
         }

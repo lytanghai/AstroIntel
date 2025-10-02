@@ -71,7 +71,7 @@ public class GoldPriceService {
             // Manual: only read from gist
             reloadHistoryFromGist(calculationPrices);
             if (calculationPrices.isEmpty()) {
-                return "⚠ No historical data found in gist."  + "\n* " + MessageConst.getRandomQuote();
+                return "⚠ No historical data found in gist."  + "\n\n* " + MessageConst.getRandomQuote();
             }
         } else {
             // Auto: fetch and update
