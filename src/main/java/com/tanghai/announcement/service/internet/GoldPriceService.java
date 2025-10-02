@@ -20,7 +20,8 @@ public class GoldPriceService {
     @Autowired
     private GistService gistService;
 
-    @Scheduled(cron = "0 0 */2 * * *", zone = "Asia/Phnom_Penh")
+//    @Scheduled(cron = "0 0 */2 * * *", zone = "Asia/Phnom_Penh")
+    @Scheduled(cron = "0 */2 * * * *", zone = "Asia/Phnom_Penh")
     public void saveGist() {
         showTechnicalAnalysis();
     }
