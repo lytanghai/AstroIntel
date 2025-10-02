@@ -39,7 +39,7 @@ public class GistService {
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", properties.getGithubToken().trim());
+        headers.set("Authorization", "Bearer " + properties.getGithubToken().trim());
         headers.setAccept(MediaType.parseMediaTypes("application/vnd.github+json"));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("User-Agent", "AstroApp");
@@ -74,7 +74,6 @@ public class GistService {
         log.info("Gist ID {}", properties.getGistId().substring(0, 10));
 
         log.info("url req: {}", TelegramConst.GIST_BASE_URL + properties.getGistId().substring(0, 10));
-
         ResponseEntity<Map> response = restTemplate.exchange(
                 TelegramConst.GIST_BASE_URL + properties.getGistId(),
                 HttpMethod.GET,
@@ -88,9 +87,11 @@ public class GistService {
 
         try {
             Map<String, Object> json = objectMapper.readValue(content, Map.class);
-            log.info("Gist cache is not available! Freshly fetch successfully");
-            cachedGist = json;
-            cacheTime = Instant.now();
+            if(storeCache) {
+                log.info("Gist cache is not available! Freshly fetch successfully");
+                cachedGist = json;
+                cacheTime = Instant.now();
+            }
 
             return json;
         } catch (Exception e) {
@@ -114,8 +115,8 @@ public class GistService {
                 HttpPatch patch = new HttpPatch(TelegramConst.GIST_BASE_URL + properties.getGistId());
 
                 // Set headers
-                patch.setHeader("Authorization", "token " + properties.getGithubToken().trim());
-                patch.setHeader("Accept", "application/vnd.github.v3+json");
+                patch.setHeader("Authorization", "Bearer " + properties.getGithubToken().trim());
+                patch.setHeader("Accept", "application/vnd.github+json");
                 patch.setHeader("Content-Type", "application/json");
                 patch.setHeader("User-Agent", "AstroApp");
 
@@ -126,7 +127,7 @@ public class GistService {
                 HttpResponse response = client.execute(patch);
 
                 int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode >= 200 && statusCode < 300) {
+                    if (statusCode >= 200 && statusCode < 300) {
                     if(storeCache) {
                         log.info("Freshly updated successfully");
                         // Clear cache after update

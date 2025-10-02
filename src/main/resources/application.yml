@@ -11,7 +11,7 @@ telegram:
     webhook-path: /telegram/webhook
 
 app:
-  base-url: https://astrointel.onrender.com  # your Render domain
+  base-url: https://astrointel.onrender.com
 
 server:
   port: 8080
