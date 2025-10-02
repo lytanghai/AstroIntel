@@ -2,12 +2,16 @@ package com.tanghai.announcement.component;
 
 import com.tanghai.announcement.constant.MessageConst;
 import com.tanghai.announcement.constant.TelegramConst;
+import com.tanghai.announcement.dto.resp.GoldApiResp;
 import com.tanghai.announcement.service.internet.ForexService;
 import com.tanghai.announcement.service.internet.GistService;
+import com.tanghai.announcement.utilz.DateUtilz;
 import com.tanghai.announcement.utilz.Formatter;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,9 +76,24 @@ public class GeneralAlert {
         }
     }
 
+    private Map<String, Object> fetchGistAsMap(Double goldPrice) {
+        Map<String, Object> json = gistService.getGistContent(true, TelegramConst.PRICE_JSON);
+        if (json == null) json = new HashMap<>();
+
+        Map<String, Object> xauHistory = (Map<String, Object>) json.get("xau_history");
+        if (xauHistory == null) xauHistory = new HashMap<>();
+
+        xauHistory.put(DateUtilz.format(new Date()), goldPrice);
+        json.put("xau_history", xauHistory);
+
+        return json;
+    }
+
     @Scheduled(cron = "0 0,30 7-23 ? * MON-FRI", zone = "Asia/Phnom_Penh")
     void alertPrice30Min() {
-        sendToAllSubscribers(Formatter.autoAlertGoldPrice(ForexService.goldApiResp()));
+        GoldApiResp goldResponse = ForexService.goldApiResp();
+        sendToAllSubscribers(Formatter.autoAlertGoldPrice(goldResponse));
+        this.fetchGistAsMap(goldResponse.getPrice());
     }
 
     @Scheduled(cron = "0 0 5 ? * MON-FRI", zone = "GMT")
