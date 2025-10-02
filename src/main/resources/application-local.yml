@@ -15,8 +15,6 @@ server:
   port: 8080
 
 
-gist:
-#  github-token: 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
-#  gist-id: fb818bb69726ec3afb492097596a5cdd
-#    github-token: ${GITHUB_TOKEN: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}
-#    gist-id: ${GIST_ID:fb818bb69726ec3afb492097596a5cdd}
+#gist:
+#    github-token: ${GITHUB_TOKEN}
+#    gist-id: ${GIST_ID}
