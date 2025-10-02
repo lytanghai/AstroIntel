@@ -1,13 +1,15 @@
 package com.tanghai.announcement.service.internet;
 
+import com.tanghai.announcement.constant.TelegramConst;
 import com.tanghai.announcement.dto.resp.GoldPrice;
+import com.tanghai.announcement.utilz.DateUtilz;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class GoldPriceService {
@@ -15,22 +17,48 @@ public class GoldPriceService {
     private final int MAX_SIZE = 30 * 22 * 5; // 1 month approx, 22 prices/day, 5 days/week
     private final List<GoldPrice> prices = new ArrayList<>();
 
+    @Autowired
+    private GistService gistService;
+
+    @Scheduled(cron = "0 0 */2 * * *", zone = "Asia/Phnom_Penh")
+    public void saveGist() {
+        showTechnicalAnalysis();
+    }
+
     private double fetchGoldPrice() {
         return ForexService.goldApiResp().getPrice();
     }
 
     public String showTechnicalAnalysis() {
         // 1️⃣ Fetch the new price
-        double newPrice = fetchGoldPrice(); // your API or mock function
+        double newPrice = fetchGoldPrice();
         GoldPrice gp = new GoldPrice(LocalDateTime.now(), newPrice);
 
         // 2️⃣ Keep array size within MAX_SIZE
         if (prices.size() >= MAX_SIZE) {
-            prices.remove(0); // remove oldest
+            prices.remove(0);
         }
-        prices.add(gp); // add newest price
+        prices.add(gp);
 
-        // 3️⃣ SHORT TERM calculation
+        // 3️⃣ Update JSON structure (safe handling)
+        Map<String, Object> json = gistService.getGistContent(false, TelegramConst.PRICE_JSON);
+
+        // ensure "xau_usd" exists
+        Map<String, Object> xauPrice = (Map<String, Object>) json.get("xau_history");
+        if (xauPrice == null) {
+            xauPrice = new HashMap<>();
+            json.put("xau_history", xauPrice);
+        }
+
+        xauPrice.put(DateUtilz.format(new Date()), gp.getPrice());
+        gistService.updateGistContent(
+                xauPrice,
+                false,
+                TelegramConst.PRICE_JSON
+        );
+
+
+        // 4️⃣ SHORT TERM calculation
         GoldPrice last = gp;
         GoldPrice prev = prices.size() > 1 ? prices.get(prices.size() - 2) : null;
 
@@ -70,7 +98,7 @@ public class GoldPriceService {
             shortTermGrowth = "N/A";
         }
 
-        // 4️⃣ LONG TERM calculation
+        // 5️⃣ LONG TERM calculation
         GoldPrice first = prices.get(0);
         double longGrowth = ((last.getPrice() - first.getPrice()) / first.getPrice()) * 100;
 
@@ -92,7 +120,7 @@ public class GoldPriceService {
         else if (slope < -threshold) longTermTrend = "Downtrend";
         else longTermTrend = "Sideways";
 
-        // 5️⃣ Build message
+        // 6️⃣ Build message
         StringBuilder sb = new StringBuilder();
         sb.append("📊 Technical Analysis\n\n");
 

@@ -56,10 +56,13 @@ public class GistService {
         return cachedGist != null && Instant.now().minusMillis(CACHE_TTL_MS).isBefore(cacheTime);
     }
 
-    public Map<String, Object> getGistContent() {
-        if (cachedGist != null && Instant.now().minusMillis(CACHE_TTL_MS).isBefore(cacheTime)) {
-            log.info("Gist cache is available");
-            return cachedGist;
+    public Map<String, Object> getGistContent(boolean storeCache, String fileName) {
+
+        if(storeCache) {
+            if (cachedGist != null && Instant.now().minusMillis(CACHE_TTL_MS).isBefore(cacheTime)) {
+                log.info("Gist cache is available");
+                return cachedGist;
+            }
         }
 
         HttpEntity<Void> entity = new HttpEntity<>(getHeaders());
@@ -74,7 +77,7 @@ public class GistService {
         );
 
         Map files = (Map) response.getBody().get(TelegramConst.FILES);
-        Map file = (Map) files.get(TelegramConst.DATA_JSON);
+        Map file = (Map) files.get(fileName);
         String content = (String) file.get(TelegramConst.CONTENT);
 
         try {
@@ -89,11 +92,11 @@ public class GistService {
         }
     }
 
-    public void updateGistContent(Map<String, Object> updatedContent) {
+    public void updateGistContent(Map<String, Object> updatedContent, boolean storeCache, String fileName) {
         try {
             String innerContent = objectMapper.writeValueAsString(updatedContent);
             Map<String, Object> filesMap = Map.of(
-                    TelegramConst.DATA_JSON, Map.of(TelegramConst.CONTENT, innerContent)
+                    fileName, Map.of(TelegramConst.CONTENT, innerContent)
             );
             Map<String, Object> bodyMap = Map.of(
                     TelegramConst.FILES, filesMap
@@ -117,7 +120,7 @@ public class GistService {
                 HttpResponse response = client.execute(patch);
 
                 int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode >= 200 && statusCode < 300) {
+                if (statusCode >= 200 && statusCode < 300 && storeCache) {
                     log.info("Freshly updated successfully");
                     // Clear cache after update
                     cachedGist = null;
@@ -133,7 +136,7 @@ public class GistService {
     }
 
     public void subscribeToGist(String chatId) {
-        Map<String, Object> json = getGistContent();
+        Map<String, Object> json = getGistContent(true, TelegramConst.DATA_JSON);
 
         Map<String, Object> telegram = (Map<String, Object>) json.get(TelegramConst.TELEGRAM);
         if (telegram == null) telegram = Map.of(TelegramConst.CHAT_ID, new ArrayList<String>());
@@ -145,11 +148,11 @@ public class GistService {
         telegram.put(TelegramConst.CHAT_ID, chatIds);
         json.put(TelegramConst.TELEGRAM, telegram);
 
-        updateGistContent(json);
+        updateGistContent(json, true, TelegramConst.DATA_JSON);
     }
 
     public void unSubscribeToGist(String chatId) {
-        Map<String, Object> json = getGistContent();
+        Map<String, Object> json = getGistContent(true, TelegramConst.DATA_JSON);
 
         Map<String, Object> telegram = (Map<String, Object>) json.get(TelegramConst.TELEGRAM);
         if (telegram == null) return; // nothing to remove
@@ -161,7 +164,7 @@ public class GistService {
         telegram.put(TelegramConst.CHAT_ID, chatIds);
         json.put(TelegramConst.TELEGRAM, telegram);
 
-        updateGistContent(json);
+        updateGistContent(json, true, TelegramConst.DATA_JSON);
     }
 
 }

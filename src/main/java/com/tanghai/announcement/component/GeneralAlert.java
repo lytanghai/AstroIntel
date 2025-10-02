@@ -53,7 +53,7 @@ public class GeneralAlert {
 
     /** Fetch subscribed chat IDs from Gist and send message to each */
     private void sendToAllSubscribers(String message) {
-        Map<String, Object> json = gistService.getGistContent();
+        Map<String, Object> json = gistService.getGistContent(true, TelegramConst.DATA_JSON);
         Map<String, Object> telegram = (Map<String, Object>) json.get(TelegramConst.TELEGRAM);
 
         if (telegram == null) return;
