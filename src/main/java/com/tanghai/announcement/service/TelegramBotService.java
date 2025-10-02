@@ -59,7 +59,7 @@ public class TelegramBotService {
                 return "❌ *Unsubscription Successful!*\n\n" +
                         "You will no longer receive alerts and announcements.";
 
-            case "/trend": return goldPriceService.showTechnicalAnalysis();
+            case "/trend": return goldPriceService.showTechnicalAnalysis(true);
 
             default: return "Unknown command: " + command;
         }

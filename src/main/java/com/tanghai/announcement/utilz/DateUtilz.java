@@ -2,6 +2,7 @@ package com.tanghai.announcement.utilz;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +13,9 @@ public class DateUtilz {
     public static final String DATE_WITH_TIME_1 = "dd-MM-yyyy HH:mm:ss";
 
     public static final String DATE_FORMAT_3 = "yyyy-MM-dd";
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy:HH:mm:ss");
+
 
     public static String toPhnomPenhTime(String input) {
         ZonedDateTime sourceDateTime = ZonedDateTime.parse(input);
@@ -51,5 +55,9 @@ public class DateUtilz {
 
     public static String format(Date date, String format, String defaultValue) {
         return date == null ? defaultValue : new SimpleDateFormat(format).format(date);
+    }
+
+    public static LocalDateTime parse(String str) {
+        return LocalDateTime.parse(str, formatter);
     }
 }

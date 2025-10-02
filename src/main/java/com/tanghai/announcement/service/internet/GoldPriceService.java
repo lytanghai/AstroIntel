@@ -22,52 +22,68 @@ public class GoldPriceService {
 
     @Scheduled(cron = "0 0 */2 * * *", zone = "Asia/Phnom_Penh")
     public void saveGist() {
-        showTechnicalAnalysis();
+        showTechnicalAnalysis(false);
     }
 
     private double fetchGoldPrice() {
         return ForexService.goldApiResp().getPrice();
     }
 
-    public String showTechnicalAnalysis() {
-        // 1️⃣ Fetch the new price
-        double newPrice = fetchGoldPrice();
-        GoldPrice gp = new GoldPrice(LocalDateTime.now(), newPrice);
+    public String showTechnicalAnalysis(boolean manual) {
+        List<GoldPrice> calculationPrices = new ArrayList<>();
 
-        // 2️⃣ Keep array size within MAX_SIZE
-        if (prices.size() >= MAX_SIZE) {
-            prices.remove(0);
+        if (!manual) {
+            // 1️⃣ Fetch the new price
+            double newPrice = fetchGoldPrice();
+            GoldPrice gp = new GoldPrice(LocalDateTime.now(), newPrice);
+
+            // 2️⃣ Keep array size within MAX_SIZE
+            if (prices.size() >= MAX_SIZE) {
+                prices.remove(0);
+            }
+            prices.add(gp);
+
+            // 3️⃣ Update JSON structure in gist
+            Map<String, Object> json = gistService.getGistContent(false, TelegramConst.PRICE_JSON);
+            if (json == null) json = new HashMap<>();
+
+            Map<String, Object> xauHistory = (Map<String, Object>) json.get("xau_history");
+            if (xauHistory == null) xauHistory = new HashMap<>();
+
+            xauHistory.put(DateUtilz.format(new Date()), gp.getPrice());
+            json.put("xau_history", xauHistory);
+
+            gistService.updateGistContent(json, false, TelegramConst.PRICE_JSON);
+
+            calculationPrices = prices; // use full list for analysis
+
+        } else {
+            // 1️⃣ Retrieve historical prices from gist
+            Map<String, Object> json = gistService.getGistContent(false, TelegramConst.PRICE_JSON);
+            if (json != null && json.get("xau_history") != null) {
+                Map<String, Object> xauHistory = (Map<String, Object>) json.get("xau_history");
+                // Convert map entries to GoldPrice objects
+                for (Map.Entry<String, Object> entry : xauHistory.entrySet()) {
+                    LocalDateTime ts = DateUtilz.parse(entry.getKey());
+                    double price = Double.parseDouble(entry.getValue().toString());
+                    calculationPrices.add(new GoldPrice(ts, price));
+                }
+                // Sort by timestamp just in case
+                calculationPrices.sort(Comparator.comparing(GoldPrice::getTimestamp));
+            }
+            if (calculationPrices.isEmpty()) {
+                return "⚠ No historical data found in gist.";
+            }
         }
-        prices.add(gp);
 
-        Map<String, Object> json = gistService.getGistContent(false, TelegramConst.PRICE_JSON);
-
-        if (json == null) {
-            json = new HashMap<>();
-        }
-
-        Map<String, Object> xauHistory = (Map<String, Object>) json.get("xau_history");
-        if (xauHistory == null) {
-            xauHistory = new HashMap<>();
-        }
-
-        xauHistory.put(DateUtilz.format(new Date()), gp.getPrice());
-        json.put("xau_history", xauHistory);
-
-        gistService.updateGistContent(
-                json,
-                false,
-                TelegramConst.PRICE_JSON
-        );
-
-
-        // 4️⃣ SHORT TERM calculation
-        GoldPrice last = gp;
-        GoldPrice prev = prices.size() > 1 ? prices.get(prices.size() - 2) : null;
+        // Use the last price for current analysis
+        GoldPrice last = calculationPrices.get(calculationPrices.size() - 1);
+        GoldPrice prev = calculationPrices.size() > 1 ? calculationPrices.get(calculationPrices.size() - 2) : null;
 
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+        // Short-term calculation
         String shortTermTime;
         String shortTermGrowth;
         String shortTermTrend = "N/A";
@@ -79,12 +95,11 @@ public class GoldPriceService {
             double growth = ((last.getPrice() - prev.getPrice()) / prev.getPrice()) * 100;
             shortTermGrowth = String.format("%.2f%%", growth);
 
-            // Trend using last 10 prices
-            int n = Math.min(10, prices.size());
+            int n = Math.min(10, calculationPrices.size());
             double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
             for (int i = 0; i < n; i++) {
                 double x = i;
-                double y = prices.get(prices.size() - n + i).getPrice();
+                double y = calculationPrices.get(calculationPrices.size() - n + i).getPrice();
                 sumX += x;
                 sumY += y;
                 sumXY += x * y;
@@ -101,16 +116,15 @@ public class GoldPriceService {
             shortTermGrowth = "N/A";
         }
 
-        // 5️⃣ LONG TERM calculation
-        GoldPrice first = prices.get(0);
+        // Long-term calculation
+        GoldPrice first = calculationPrices.get(0);
         double longGrowth = ((last.getPrice() - first.getPrice()) / first.getPrice()) * 100;
 
-        // Trend over full stored list
-        int n = prices.size();
+        int n = calculationPrices.size();
         double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
         for (int i = 0; i < n; i++) {
             double x = i;
-            double y = prices.get(i).getPrice();
+            double y = calculationPrices.get(i).getPrice();
             sumX += x;
             sumY += y;
             sumXY += x * y;
@@ -123,7 +137,7 @@ public class GoldPriceService {
         else if (slope < -threshold) longTermTrend = "Downtrend";
         else longTermTrend = "Sideways";
 
-        // 6️⃣ Build message
+        // Build message
         StringBuilder sb = new StringBuilder();
         sb.append("📊 Technical Analysis\n\n");
 
@@ -144,5 +158,6 @@ public class GoldPriceService {
 
         return sb.toString();
     }
+
 
 }
