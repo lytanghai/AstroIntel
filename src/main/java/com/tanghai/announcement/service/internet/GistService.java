@@ -120,11 +120,13 @@ public class GistService {
                 HttpResponse response = client.execute(patch);
 
                 int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode >= 200 && statusCode < 300 && storeCache) {
-                    log.info("Freshly updated successfully");
-                    // Clear cache after update
-                    cachedGist = null;
-                    cacheTime = Instant.EPOCH;
+                if (statusCode >= 200 && statusCode < 300) {
+                    if(storeCache) {
+                        log.info("Freshly updated successfully");
+                        // Clear cache after update
+                        cachedGist = null;
+                        cacheTime = Instant.EPOCH;
+                    }
                 } else {
                     throw new RuntimeException("Failed to update Gist, HTTP code: " + statusCode);
                 }

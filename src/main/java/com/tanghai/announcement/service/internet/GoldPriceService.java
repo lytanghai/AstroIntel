@@ -20,8 +20,7 @@ public class GoldPriceService {
     @Autowired
     private GistService gistService;
 
-//    @Scheduled(cron = "0 0 */2 * * *", zone = "Asia/Phnom_Penh")
-    @Scheduled(cron = "0 */2 * * * *", zone = "Asia/Phnom_Penh")
+    @Scheduled(cron = "0 0 */2 * * *", zone = "Asia/Phnom_Penh")
     public void saveGist() {
         showTechnicalAnalysis();
     }
@@ -41,19 +40,22 @@ public class GoldPriceService {
         }
         prices.add(gp);
 
-        // 3️⃣ Update JSON structure (safe handling)
         Map<String, Object> json = gistService.getGistContent(false, TelegramConst.PRICE_JSON);
 
-        // ensure "xau_usd" exists
-        Map<String, Object> xauPrice = (Map<String, Object>) json.get("xau_history");
-        if (xauPrice == null) {
-            xauPrice = new HashMap<>();
-            json.put("xau_history", xauPrice);
+        if (json == null) {
+            json = new HashMap<>();
         }
 
-        xauPrice.put(DateUtilz.format(new Date()), gp.getPrice());
+        Map<String, Object> xauHistory = (Map<String, Object>) json.get("xau_history");
+        if (xauHistory == null) {
+            xauHistory = new HashMap<>();
+        }
+
+        xauHistory.put(DateUtilz.format(new Date()), gp.getPrice());
+        json.put("xau_history", xauHistory);
+
         gistService.updateGistContent(
-                xauPrice,
+                json,
                 false,
                 TelegramConst.PRICE_JSON
         );
