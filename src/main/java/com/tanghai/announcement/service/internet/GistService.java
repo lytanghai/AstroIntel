@@ -39,7 +39,8 @@ public class GistService {
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(properties.getGithubToken().trim());
+//        headers.setBearerAuth(properties.getGithubToken().trim());
+        headers.set("Authorization", properties.getGithubToken().trim());
         headers.setAccept(MediaType.parseMediaTypes("application/vnd.github+json"));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("User-Agent", "AstroApp");
