@@ -9,11 +9,19 @@ public class Formatter {
 
     public static String formatForexCalendar(List<ForexCalendarResp> events) {
         StringBuilder sb = new StringBuilder();
-
         for (ForexCalendarResp e : events) {
+            String impactLevel = "";
+            if(e.getImpact().equals("Low")) {
+                impactLevel = "🟢";
+            } else if(e.getImpact().equals("High")) {
+                impactLevel = "🔴" ;
+            } else {
+                impactLevel =  "🟠";
+            }
             sb.append("📅 ").append(e.getDate()).append("\n")
                     .append("💡 ").append(e.getTitle()).append("\n")
-                    .append("🌐 ").append(e.getCountry()).append(" | Impact: ").append(e.getImpact()).append("\n")
+                    .append("🌐 ").append(e.getCountry()).append("\n")
+                    .append(" | Impact: ").append(e.getImpact()).append(" ").append(impactLevel).append("\n")
                     .append(" | Previous: ").append(e.getPrevious() != null ? e.getPrevious() : "-")
                     .append("📊 Forecast: ").append(e.getForecast() != null ? e.getForecast() : "-")
                     .append("\n\n");
@@ -23,7 +31,7 @@ public class Formatter {
 
     public static String autoAlertGoldPrice(GoldApiResp gold) {
         if(gold != null) {
-            return "📢* " + gold.getPrice().toString().substring(0,8);
+            return "📢* " + gold.getPrice().toString();
         }
         return null;
     }
