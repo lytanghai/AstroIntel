@@ -29,9 +29,26 @@ public class Formatter {
         return sb.toString().trim();
     }
 
-    public static String autoAlertGoldPrice(GoldApiResp gold) {
+    static double calculateToLocalPrice(double price) {
+        return price * 1.2;
+    }
+
+    public static String autoAlertGoldPrice(GoldApiResp gold, double previous) {
         if(gold != null) {
-            return "📢* " + gold.getPrice().toString();
+            double calculateAvg30MinPrice = gold.getPrice() - previous;
+            String trendType = "(Sideway)";
+            if(calculateAvg30MinPrice < 0) {
+                trendType = "(Negative)";
+            } else if(calculateAvg30MinPrice > 0) {
+                trendType = "(Positive)";
+            }
+            return  "🔥" + " Updated: Gold[XAU] \n" +
+                    "តម្លៃបច្ចុប្បន្ន: " + gold.getPrice().toString() +
+                    "/អោន ≈ "
+                    + calculateToLocalPrice(gold.getPrice())
+                    + "ដុល្លារ/តម្លឹង \n"
+                    +"🔥 Average Change (30min): "
+                    + calculateAvg30MinPrice + " Points " + trendType;
         }
         return null;
     }

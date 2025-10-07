@@ -25,6 +25,8 @@ public class GeneralAlert {
         this.gistService = gistService;
     }
 
+    private Double PREVIOUS_30_MIN_PRICE = 0.0;
+
     private static final String MARKET_OPEN_MSG =
             "🌅 *Market Open Alert*\n\n" +
             "📢 The Gold Market is now open!\n" +
@@ -44,6 +46,7 @@ public class GeneralAlert {
             "🌏 *Asia Session Alert*\n\n" +
             "📢 The Asia trading session has started.\n" +
             "⏰ Trading hours: 07:00 AM – 04:00 PM GMT\n" +
+            "⏰ Average Pips Movement: 20-40 Points\n" +
             "💡 Watch out for volatility in Asian markets!\n\n" +
             "* " + MessageConst.getRandomQuote();
 
@@ -51,6 +54,7 @@ public class GeneralAlert {
             "🇬🇧 *London Session Alert*\n\n" +
             "📢 The London trading session has started.\n" +
             "⏰ Trading hours: 02:00 PM – 11:00 PM GMT\n" +
+            "⏰ Average Pips Movement: 30-70 Points\n" +
             "💡 Expect increased activity in gold and forex markets!\n\n" +
             "* " + MessageConst.getRandomQuote();
 
@@ -58,6 +62,7 @@ public class GeneralAlert {
             "🇺🇸 *New York Session Alert*\n\n" +
             "📢 The New York trading session has started.\n" +
             "⏰ Trading hours: 08:00 PM – 05:00 AM GMT\n" +
+            "⏰ Average Pips Movement: 40-80 Points\n" +
             "💡 Major economic news may impact gold prices!\n\n" +
             "* " + MessageConst.getRandomQuote();
 
@@ -92,8 +97,9 @@ public class GeneralAlert {
     @Scheduled(cron = "0 0,30 7-23 ? * MON-FRI", zone = "Asia/Phnom_Penh")
     void alertPrice30Min() {
         GoldApiResp goldResponse = ForexService.goldApiResp();
-        sendToAllSubscribers(Formatter.autoAlertGoldPrice(goldResponse));
+        sendToAllSubscribers(Formatter.autoAlertGoldPrice(goldResponse, PREVIOUS_30_MIN_PRICE));
         this.fetchGistAsMap(goldResponse.getPrice());
+        PREVIOUS_30_MIN_PRICE = goldResponse.getPrice();
     }
 
     @Scheduled(cron = "0 0 5 ? * MON-FRI", zone = "GMT")
