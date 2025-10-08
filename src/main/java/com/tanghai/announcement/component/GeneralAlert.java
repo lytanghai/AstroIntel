@@ -102,7 +102,7 @@ public class GeneralAlert {
         PREVIOUS_30_MIN_PRICE = goldResponse.getPrice();
     }
 
-    @Scheduled(cron = "0 0 5 ? * MON-FRI", zone = "GMT")
+    @Scheduled(cron = "0 0 5 ? * MON", zone = "GMT")
     void marketOpen() {
         sendToAllSubscribers(MARKET_OPEN_MSG);
     }
