@@ -50,20 +50,20 @@ public class Formatter {
                 trendType = "bullish (+)" ;
             }
 
-            return  "🏆 *Gold Market Update* 🏆\n\n" +
-                    "💰 Current Price: " + gold.getPrice().toString().substring(0,8) + " USD/oz\n" +
-                    "💱 ≈ " + calculateToLocalPrice(gold.getPrice()) + " ដុល្លារ/តម្លឹង\n" +
-                    "📈 30-Min Change: " + formattedValue + " pts " + trendType + "\n" +
-                    "🔥 Stay alert — market is " + (trendType.contains("Bullish") ? "🟢 heating up!" : "🔴 cooling down!");
+//            return  "🏆 *Gold Market Update* 🏆\n\n" +
+//                    "💰 Current Price: " + gold.getPrice().toString().substring(0,8) + " USD/oz\n" +
+//                    "💱 ≈ " + calculateToLocalPrice(gold.getPrice()) + " ដុល្លារ/តម្លឹង\n" +
+//                    "📈 30-Min Change: " + formattedValue + " pts " + trendType + "\n" +
+//                    "🔥 Stay alert — market is " + (trendType.contains("Bullish") ? "🟢 heating up!" : "🔴 cooling down!");
 
 
-//            return  "🔥" + " Updated: Gold [XAU] \n" +
-//                    "តម្លៃបច្ចុប្បន្ន: " + gold.getPrice().toString().substring(0,8) +
-//                    "/អោន ≈ "
-//                    + calculateToLocalPrice(gold.getPrice())
-//                    + "ដុល្លារ/តម្លឹង \n"
-//                    +"🔥 Average Change (30min): "
-//                    + formattedValue + " Points " + trendType;
+            return  "🔥" + " Updated: Gold [XAU] \n" +
+                    "តម្លៃបច្ចុប្បន្ន: " + gold.getPrice().toString().substring(0,8) +
+                    "/អោន ≈ "
+                    + calculateToLocalPrice(gold.getPrice())
+                    + "ដុល្លារ/តម្លឹង \n"
+                    +"🔥 Average Change (30min): "
+                    + formattedValue + " Points " + trendType;
         }
         return null;
     }
