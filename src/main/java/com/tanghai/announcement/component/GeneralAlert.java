@@ -120,7 +120,7 @@ public class GeneralAlert {
 
     @Scheduled(cron = "0 0 16 ? * MON-FRI", zone = "Asia/Phnom_Penh")
     void asiaSessionClose() {
-        sendToAllSubscribers("🌏 *Asia Session Closed* ⏰ 16:00:00 Phnom Penh time" + "\n\n* " + MessageConst.getRandomQuote());
+        sendToAllSubscribers("🌏 *Asia Session Closed* \n⏰ 16:00:00 (4PM)" + "\n\n* " + MessageConst.getRandomQuote());
     }
 
     // London Session: 2:00 PM – 11:00 PM
@@ -131,7 +131,7 @@ public class GeneralAlert {
 
     @Scheduled(cron = "0 0 23 ? * MON-FRI", zone = "Asia/Phnom_Penh")
     void londonSessionClose() {
-        sendToAllSubscribers("🇬🇧 *London Session Closed* ⏰ 23:00:00 Phnom Penh time" + "\n\n* " + MessageConst.getRandomQuote());
+        sendToAllSubscribers("🇬🇧 *London Session Closed* \n⏰ 23:00:00 (11PM)" + "\n\n* " + MessageConst.getRandomQuote());
     }
 
     // New York Session: 8:00 PM – 5:00 AM (next day)
@@ -142,7 +142,7 @@ public class GeneralAlert {
 
     @Scheduled(cron = "0 0 5 ? * TUE-SAT", zone = "Asia/Phnom_Penh") // next day close
     void newYorkSessionClose() {
-        sendToAllSubscribers("🇺🇸 *New York Session Closed* ⏰ 05:00:00 Phnom Penh time" + "\n\n* " + MessageConst.getRandomQuote());
+        sendToAllSubscribers("🇺🇸 *New York Session Closed* \n⏰ 05:00:00 (5AM)" + "\n\n* " + MessageConst.getRandomQuote());
     }
 
 }

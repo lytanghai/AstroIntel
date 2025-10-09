@@ -3,6 +3,10 @@ package com.tanghai.announcement.utilz;
 import com.tanghai.announcement.dto.resp.ForexCalendarResp;
 import com.tanghai.announcement.dto.resp.GoldApiResp;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Formatter {
@@ -16,15 +20,15 @@ public class Formatter {
             } else if(e.getImpact().equals("High")) {
                 impactLevel = "🔴" ;
             } else {
-                impactLevel =  "🟠";
+                impactLevel = "🟠";
             }
             sb.append("📅 ").append(e.getDate()).append("\n")
-                    .append("💡 ").append(e.getTitle()).append("\n")
-                    .append("🌐 ").append(e.getCountry()).append("\n")
-                    .append(" | Impact: ").append(e.getImpact()).append(" ").append(impactLevel).append("\n")
-                    .append(" | Previous: ").append(e.getPrevious() != null ? e.getPrevious() : "-")
-                    .append("📊 Forecast: ").append(e.getForecast() != null ? e.getForecast() : "-")
-                    .append("\n\n");
+                    .append("| ចំណងជើង: ").append(e.getTitle()).append("\n")
+                    .append("| រូបិយប័ណ្ណ: ").append(e.getCountry()).append("\n")
+                    .append("| ផលប៉ះពាល់: ").append(e.getImpact()).append(" ").append(impactLevel).append("\n")
+                    .append("| ទិន្ន័យចាស់: ").append(e.getPrevious() != null ? e.getPrevious() : "-").append("\n")
+                    .append("| ការទស្សន៍ទាយ: ").append(e.getForecast() != null ? e.getForecast() : "-")
+                    .append("\n\n\n");
         }
         return sb.toString().trim();
     }
@@ -36,19 +40,31 @@ public class Formatter {
     public static String autoAlertGoldPrice(GoldApiResp gold, double previous) {
         if(gold != null) {
             double calculateAvg30MinPrice = gold.getPrice() - previous;
-            String trendType = "(Sideway)";
+            DecimalFormat df = new DecimalFormat("#.####"); // Pattern for up to 4 decimal places
+            df.setRoundingMode(RoundingMode.HALF_UP); // Set rounding mode (e.g., half up)
+            String formattedValue = df.format(calculateAvg30MinPrice);
+            String trendType = "sideway (~)";
             if(calculateAvg30MinPrice < 0) {
-                trendType = "(Negative)";
+                trendType = "bearish (-)";
             } else if(calculateAvg30MinPrice > 0) {
-                trendType = "(Positive)";
+                trendType = "bullish (+)" ;
             }
-            return  "🔥" + " Updated: Gold[XAU] \n" +
-                    "តម្លៃបច្ចុប្បន្ន: " + gold.getPrice().toString() +
-                    "/អោន ≈ "
-                    + calculateToLocalPrice(gold.getPrice())
-                    + "ដុល្លារ/តម្លឹង \n"
-                    +"🔥 Average Change (30min): "
-                    + calculateAvg30MinPrice + " Points " + trendType;
+
+            return  "🏆 *Gold Market Update* 🏆\n\n" +
+                    "💰 Current Price: " + gold.getPrice().toString().substring(0,8) + " USD/oz\n" +
+                    "💱 ≈ " + calculateToLocalPrice(gold.getPrice()) + " ដុល្លារ/តម្លឹង\n\n" +
+                    "📈 30-Min Change: " + formattedValue + " pts " + trendType + "\n" +
+                    "⏰ Updated: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "\n" +
+                    "🔥 Stay alert — market is " + (trendType.contains("Bullish") ? "🟢 heating up!" : "🔴 cooling down!");
+
+
+//            return  "🔥" + " Updated: Gold [XAU] \n" +
+//                    "តម្លៃបច្ចុប្បន្ន: " + gold.getPrice().toString().substring(0,8) +
+//                    "/អោន ≈ "
+//                    + calculateToLocalPrice(gold.getPrice())
+//                    + "ដុល្លារ/តម្លឹង \n"
+//                    +"🔥 Average Change (30min): "
+//                    + formattedValue + " Points " + trendType;
         }
         return null;
     }
