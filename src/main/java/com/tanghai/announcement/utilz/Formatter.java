@@ -52,9 +52,8 @@ public class Formatter {
 
             return  "🏆 *Gold Market Update* 🏆\n\n" +
                     "💰 Current Price: " + gold.getPrice().toString().substring(0,8) + " USD/oz\n" +
-                    "💱 ≈ " + calculateToLocalPrice(gold.getPrice()) + " ដុល្លារ/តម្លឹង\n\n" +
+                    "💱 ≈ " + calculateToLocalPrice(gold.getPrice()) + " ដុល្លារ/តម្លឹង\n" +
                     "📈 30-Min Change: " + formattedValue + " pts " + trendType + "\n" +
-                    "⏰ Updated: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "\n" +
                     "🔥 Stay alert — market is " + (trendType.contains("Bullish") ? "🟢 heating up!" : "🔴 cooling down!");
 
 
