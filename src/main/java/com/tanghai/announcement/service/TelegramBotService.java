@@ -57,23 +57,33 @@ public class TelegramBotService {
             return "Invalid Command!!!";
         }
     }
-    private String getPrompt(String chatId, String prompt) throws Exception {
+    private String getPrompt(boolean requirePermission, String chatId, String prompt) throws Exception {
         if (!"678134373".equals(chatId)) {
             return "❌ You have no privilege to use this command!";
         }
-
-        // STEP 1: User typed "/ask" (start of the flow)
-        if (prompt == null || prompt.isEmpty() || "/ask".equalsIgnoreCase(prompt)) {
-            waitingForPrompt.put(chatId, true);
-            return "💬 Please enter your prompt for the AI: ";
+        if(requirePermission) {
+            // STEP 1: User typed "/ask" (start of the flow)
+            if (prompt == null || prompt.isEmpty() || "/ask".equalsIgnoreCase(prompt)) {
+                waitingForPrompt.put(chatId, true);
+                return "💬 Please enter your prompt for the AI: ";
+            }
+            // Default fallback
+            return "❓ Unknown input. Use /ask to send a prompt to AI.";
+        } else {
+            return aiService.generateText(prompt);
         }
-        // Default fallback
-        return "❓ Unknown input. Use /ask to send a prompt to AI.";
+
     }
     private String processCommand(String chatId, String command) throws Exception {
+
+        if(!command.contains("/")) {
+            return getPrompt(false ,chatId, command);
+        }
+
         switch (command) {
-            case "/ask":
-                return getPrompt(chatId, command);
+            // command ask first before prompt
+//            case "/ask":
+//                return getPrompt(true ,chatId, command);
 
             case "/calendar": return Formatter.formatForexCalendar(ForexService.economicCalendar());
 
