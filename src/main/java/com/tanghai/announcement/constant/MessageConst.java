@@ -63,13 +63,40 @@ public class MessageConst {
             "Gold: the only metal that makes panic feel profitable. 😬💛"
     };
 
+    static String[] reminder = {
+            "You have learned your lesson. Do you? ⚠️",
+            "Always trade with caution!!! 🛑",
+            "Patience is the key to profit ⏳💰",
+            "Greed leads to losses, remember that 💸❌",
+            "Observe the market before making a move 👀📈",
+            "Risk management is not optional ⚖️💼",
+            "Stay disciplined, stay profitable 💪💹",
+            "Every loss is a lesson in disguise 📉📚",
+            "Don’t chase the market, let it come to you 🐢📊",
+            "Keep emotions out of trading 😌📊",
+            "Plan your trade, trade your plan 📝💹",
+            "Small wins compound into big success 🌱📈",
+            "Never let a winning streak cloud judgment 🌤️❗",
+            "Control fear, control your trades 😎🛡️",
+            "Success favors the prepared trader 🏆📈",
+            "Adapt to the market, don’t fight it 🌊📊",
+            "Know when to step back and wait ⏸️👀",
+            "Learn from mistakes, not from regret ⚡📚",
+            "Fortune favors the patient, not the reckless 🍀⏳",
+            "Consistency beats occasional brilliance 🔄💰",
+            "Protect your capital at all costs 🏦🛡️",
+            "Embrace uncertainty, but stay rational 🌫️🧠",
+            "Trade with knowledge, not impulse 🎯📊",
+            "Every trade is a teacher, listen carefully 👂📈"
+    };
+
     private static final Random RANDOM = new Random();
 
     /**
      * Get a random gold trader quote
      */
     public static String getRandomQuote() {
-        int index = RANDOM.nextInt(goldTraderQuotes.length);
-        return goldTraderQuotes[index];
+        int index = RANDOM.nextInt(reminder.length);
+        return reminder[index];
     }
 }
