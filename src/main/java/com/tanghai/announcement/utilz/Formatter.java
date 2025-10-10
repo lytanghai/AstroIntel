@@ -1,5 +1,6 @@
 package com.tanghai.announcement.utilz;
 
+import com.tanghai.announcement.constant.MessageConst;
 import com.tanghai.announcement.dto.req.SupportResistanceReq;
 import com.tanghai.announcement.dto.resp.ForexCalendarResp;
 import com.tanghai.announcement.dto.resp.GoldApiResp;
@@ -56,7 +57,7 @@ public class Formatter {
         df.setRoundingMode(RoundingMode.HALF_UP);
         String formattedDiff = df.format(diff30);
 
-        String trendType = diff30 > 0 ? "𝘽𝙐𝙇𝙇𝙄𝙎𝙃 (+)" : diff30 < 0 ? "𝘽𝙀𝘼𝙍𝙄𝙎𝙃  (-)" : "𝙎𝙄𝘿𝙀𝙒𝘼𝙔 (~)";
+        String trendType = diff30 > 0 ? "🚀 𝘽𝙐𝙇𝙇𝙄𝙎𝙃 🚀" : diff30 < 0 ? "❗𝘽𝙀𝘼𝙍𝙄𝙎𝙃❗" : "🔎 𝙎𝙄𝘿𝙀𝙒𝘼𝙔 🔎";
 
         // Calculate distances to S/R (optional)
         double dR1 = r1 > 0 ? r1 - currentPrice : 0;
@@ -66,18 +67,20 @@ public class Formatter {
         double dS2 = s2 > 0 ? currentPrice - s2 : 0;
         double dS3 = s3 > 0 ? currentPrice - s3 : 0;
 
-        return  "*𝙐𝙋𝘿𝘼𝙏𝙀 តម្លៃទីផ្សារមាស \n"
-                + "💰 Current Price: " + String.format("%.2f", currentPrice)
+        return  "✨ 𝙐𝙋𝘿𝘼𝙏𝙀 តម្លៃទីផ្សារមាស ✨\n"
+                + "ᯓ★ Current Price: " + String.format("%.2f", currentPrice)
                 + " USD/oz ≈ " + calculateToLocalPrice(currentPrice) + "៛/តម្លឹង\n"
                 + "⏱️ 30-min Change: " + formattedDiff + " pts → " + trendType + "\n\n"
                 + "📊 𝙎𝙪𝙥𝙥𝙤𝙧𝙩 𝙇𝙚𝙫𝙚𝙡𝙨 \n"
-                + "𝙎𝙪𝙥𝙥𝙤𝙧𝙩 1: " + s1 + " (" + formatDiff(dS1) + ")\n"
+                + "𝙎𝙪𝙥𝙥𝙤𝙧𝙩 : " + s1 + " (" + formatDiff(dS1) + ")\n"
                 + "𝙎𝙪𝙥𝙥𝙤𝙧𝙩 2: " + s2 + " (" + formatDiff(dS2) + ")\n"
                 + "𝙎𝙪𝙥𝙥𝙤𝙧𝙩 3: " + s3 + " (" + formatDiff(dS3) + ")\n\n"
                 + "📈 𝙍𝙚𝙨𝙞𝙨𝙩𝙖𝙣𝙘𝙚 𝙇𝙚𝙫𝙚𝙡𝙨 \n"
                 + "𝙍𝙚𝙨𝙞𝙨𝙩𝙖𝙣𝙘𝙚 1: " + r1 + " (" + formatDiff(dR1) + ")\n"
                 + "𝙍𝙚𝙨𝙞𝙨𝙩𝙖𝙣𝙘𝙚 2: " + r2 + " (" + formatDiff(dR2) + ")\n"
-                + "𝙍𝙚𝙨𝙞𝙨𝙩𝙖𝙣𝙘𝙚 3: " + r3 + " (" + formatDiff(dR3) + ")\n";
+                + "𝙍𝙚𝙨𝙞𝙨𝙩𝙖𝙣𝙘𝙚 3: " + r3 + " (" + formatDiff(dR3) + ")\n\n"
+                + MessageConst.getRandomQuote();
+
     }
 
     private static double safeGet(Double value) {
@@ -98,7 +101,8 @@ public class Formatter {
             .append("|")
             .append(gold.getSymbol()).append("*\n")
             .append("𝙋𝙍𝙄𝘾𝙀: `").append(gold.getPrice()).append( "𝙐𝙎𝘿`\n")
-            .append("𝙇𝙖𝙨𝙩 𝙐𝙥𝙙𝙖𝙩𝙚𝙙: ").append(gold.getUpdatedAt());
+            .append("𝙇𝙖𝙨𝙩 𝙐𝙥𝙙𝙖𝙩𝙚𝙙: ").append(gold.getUpdatedAt()).append("\n\n")
+            .append(MessageConst.getRandomQuote());
 
             return sb.toString();
         } else {

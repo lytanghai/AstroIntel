@@ -21,7 +21,7 @@ public class GeminiApiService {
      */
     public String generateText(String chatId, String prompt) throws Exception {
         if (!"678134373".equals(chatId)) {
-            return "❌ You have no privilege to use this command!";
+            return "𝙔𝙤𝙪 𝙝𝙖𝙫𝙚 𝙣𝙤 𝙥𝙧𝙞𝙫𝙞𝙡𝙚𝙜𝙚 𝙩𝙤 𝙪𝙨𝙚 𝙩𝙝𝙞𝙨 𝙘𝙤𝙢𝙢𝙖𝙣𝙙❗";
         }
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 

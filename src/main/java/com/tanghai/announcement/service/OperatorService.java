@@ -34,18 +34,6 @@ public class OperatorService {
         return req;
     }
 
-    public void put(String key, Object value) {
-        supportResistant.put(key, value);
-    }
-
-    public Object get(String key) {
-        return supportResistant.get(key);
-    }
-
-    public boolean contain(String key) {
-        return supportResistant.containsKey(key);
-    }
-
     public void clear() {
         supportResistant.clear();
     }

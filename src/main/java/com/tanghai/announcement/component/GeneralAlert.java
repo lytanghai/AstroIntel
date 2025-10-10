@@ -40,7 +40,7 @@ public class GeneralAlert {
 
 
     private static final String MARKET_CLOSE_MSG =
-        "🌙 𝙈𝙖𝙧𝙠𝙚𝙩 𝘾𝙡𝙤𝙨𝙚𝙙* \n\n"+
+        "🌙 𝙈𝙖𝙧𝙠𝙚𝙩 𝘾𝙡𝙤𝙨𝙚𝙙💤 \n\n"+
         "📢 The Gold Market is now closed.\n" +
         "⏰ Reopens: Monday 05:00 AM (Phnom Penh time)\n" +
         "🎉 Happy Weekend!\n\n" +
@@ -55,7 +55,7 @@ public class GeneralAlert {
             "* " + MessageConst.getRandomQuote();
 
     private static final String LONDON_SESSION_MSG =
-            "🇬🇧 𝙇𝙤𝙣𝙙𝙤𝙣 𝙎𝙚𝙨𝙨𝙞𝙤𝙣* \n\n" +
+            "🚨 *𝙇𝙤𝙣𝙙𝙤𝙣 𝙎𝙚𝙨𝙨𝙞𝙤𝙣* \n\n" +
             "📢 The London trading session has started.\n" +
             "⏰ Trading hours: 02:00 PM – 11:00 PM GMT\n" +
             "⏰ Average Pips Movement: 30-70 Points\n" +
@@ -63,7 +63,7 @@ public class GeneralAlert {
             "* " + MessageConst.getRandomQuote();
 
     private static final String NEW_YORK_SESSION_MSG =
-            "🇺🇸 *𝙉𝙚𝙬 𝙔𝙤𝙧𝙠 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 \n\n" +
+            "🚨 *𝙉𝙚𝙬 𝙔𝙤𝙧𝙠 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 \n\n" +
             "📢 The New York trading session has started.\n" +
             "⏰ Trading hours: 08:00 PM – 05:00 AM GMT\n" +
             "⏰ Average Pips Movement: 40-80 Points\n" +
@@ -129,7 +129,7 @@ public class GeneralAlert {
 
     @Scheduled(cron = "0 0 16 ? * MON-FRI", zone = "Asia/Phnom_Penh")
     void asiaSessionClose() {
-       String msg =  "🌏 *𝘼𝙨𝙞𝙖 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 𝘾𝙡𝙤𝙨𝙚𝙙 \n" +
+       String msg =  "🌏 *𝘼𝙨𝙞𝙖 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 𝘾𝙡𝙤𝙨𝙚𝙙💤 \n" +
         "⏰ 16:00:00 (4PM) \n\n* " + MessageConst.getRandomQuote();
         sendToAllSubscribers(msg);
     }
@@ -142,7 +142,7 @@ public class GeneralAlert {
 
     @Scheduled(cron = "0 0 23 ? * MON-FRI", zone = "Asia/Phnom_Penh")
     void londonSessionClose() {
-        String msg = "🇬🇧 *𝙇𝙤𝙣𝙙𝙤𝙣 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 𝘾𝙡𝙤𝙨𝙚𝙙" +
+        String msg = "🚨 *𝙇𝙤𝙣𝙙𝙤𝙣 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 𝘾𝙡𝙤𝙨𝙚𝙙💤"+
                 "⏰ 23:00:00 (11PM) \n\n" +
                 "* " + MessageConst.getRandomQuote();
         sendToAllSubscribers(msg);
@@ -156,7 +156,7 @@ public class GeneralAlert {
 
     @Scheduled(cron = "0 0 5 ? * TUE-SAT", zone = "Asia/Phnom_Penh") // next day close
     void newYorkSessionClose() {
-        String msg = "🇺🇸 *𝙉𝙚𝙬 𝙔𝙤𝙧𝙠 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 𝘾𝙡𝙤𝙨𝙚𝙙* \n" + "⏰ 05:00:00 (5AM) \n\n" +
+        String msg = "🚨 *𝙉𝙚𝙬 𝙔𝙤𝙧𝙠 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 𝘾𝙡𝙤𝙨𝙚𝙙💤\n" + "⏰ 05:00:00 (5AM) \n\n" +
                 "* " + MessageConst.getRandomQuote();
         sendToAllSubscribers(msg);
     }
