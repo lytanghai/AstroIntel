@@ -2,7 +2,9 @@ package com.tanghai.announcement.component;
 
 import com.tanghai.announcement.constant.MessageConst;
 import com.tanghai.announcement.constant.TelegramConst;
+import com.tanghai.announcement.dto.req.SupportResistanceReq;
 import com.tanghai.announcement.dto.resp.GoldApiResp;
+import com.tanghai.announcement.service.OperatorService;
 import com.tanghai.announcement.service.internet.ForexService;
 import com.tanghai.announcement.service.internet.GistService;
 import com.tanghai.announcement.utilz.DateUtilz;
@@ -19,16 +21,18 @@ import java.util.Map;
 public class GeneralAlert {
     private final TelegramSender telegramSender;
     private final GistService gistService;
+    private final OperatorService operatorService;
 
-    public GeneralAlert(TelegramSender telegramSender, GistService gistService) {
+    public GeneralAlert(TelegramSender telegramSender, GistService gistService, OperatorService operatorService) {
         this.telegramSender = telegramSender;
         this.gistService = gistService;
+        this.operatorService = operatorService;
     }
 
     private Double PREVIOUS_30_MIN_PRICE = 0.0;
 
     private static final String MARKET_OPEN_MSG =
-            "🌅 *Market Open Alert*\n\n" +
+            "🌅 𝙈𝙖𝙧𝙠𝙚𝙩 𝙊𝙥𝙚𝙣* \n\n" +
             "📢 The Gold Market is now open!\n" +
             "⏰ Trading hours: Monday–Friday, 24h\n" +
             "💡 Happy Trading!\n\n" +
@@ -36,14 +40,14 @@ public class GeneralAlert {
 
 
     private static final String MARKET_CLOSE_MSG =
-        "🌙 *Market Closed*\n\n" +
+        "🌙 𝙈𝙖𝙧𝙠𝙚𝙩 𝘾𝙡𝙤𝙨𝙚𝙙* \n\n"+
         "📢 The Gold Market is now closed.\n" +
         "⏰ Reopens: Monday 05:00 AM (Phnom Penh time)\n" +
         "🎉 Happy Weekend!\n\n" +
         "* " + MessageConst.getRandomQuote();
 
     private static final String ASIA_SESSION_MSG =
-            "🌏 *Asia Session Alert*\n\n" +
+            "🌏 𝘼𝙨𝙞𝙖 𝙎𝙚𝙨𝙨𝙞𝙤𝙣* \n\n" +
             "📢 The Asia trading session has started.\n" +
             "⏰ Trading hours: 07:00 AM – 04:00 PM GMT\n" +
             "⏰ Average Pips Movement: 20-40 Points\n" +
@@ -51,7 +55,7 @@ public class GeneralAlert {
             "* " + MessageConst.getRandomQuote();
 
     private static final String LONDON_SESSION_MSG =
-            "🇬🇧 *London Session Alert*\n\n" +
+            "🇬🇧 𝙇𝙤𝙣𝙙𝙤𝙣 𝙎𝙚𝙨𝙨𝙞𝙤𝙣* \n\n" +
             "📢 The London trading session has started.\n" +
             "⏰ Trading hours: 02:00 PM – 11:00 PM GMT\n" +
             "⏰ Average Pips Movement: 30-70 Points\n" +
@@ -59,7 +63,7 @@ public class GeneralAlert {
             "* " + MessageConst.getRandomQuote();
 
     private static final String NEW_YORK_SESSION_MSG =
-            "🇺🇸 *New York Session Alert*\n\n" +
+            "🇺🇸 *𝙉𝙚𝙬 𝙔𝙤𝙧𝙠 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 \n\n" +
             "📢 The New York trading session has started.\n" +
             "⏰ Trading hours: 08:00 PM – 05:00 AM GMT\n" +
             "⏰ Average Pips Movement: 40-80 Points\n" +
@@ -97,9 +101,14 @@ public class GeneralAlert {
     @Scheduled(cron = "0 0,30 7-23 ? * MON-FRI", zone = "Asia/Phnom_Penh")
     void alertPrice30Min() {
         GoldApiResp goldResponse = ForexService.goldApiResp();
-        sendToAllSubscribers(Formatter.autoAlertGoldPrice(goldResponse, PREVIOUS_30_MIN_PRICE));
-        this.fetchGistAsMap(goldResponse.getPrice());
-        PREVIOUS_30_MIN_PRICE = goldResponse.getPrice();
+        sendToAllSubscribers(Formatter.autoAlertGoldPrice(
+                goldResponse,
+                PREVIOUS_30_MIN_PRICE,
+                operatorService.getSupportResistanceReq()));
+        if(goldResponse.getPrice() != null) {
+            this.fetchGistAsMap(goldResponse.getPrice());
+            PREVIOUS_30_MIN_PRICE = goldResponse.getPrice();
+        }
     }
 
     @Scheduled(cron = "0 0 5 ? * MON", zone = "GMT")
@@ -120,7 +129,9 @@ public class GeneralAlert {
 
     @Scheduled(cron = "0 0 16 ? * MON-FRI", zone = "Asia/Phnom_Penh")
     void asiaSessionClose() {
-        sendToAllSubscribers("🌏 *Asia Session Closed* \n⏰ 16:00:00 (4PM)" + "\n\n* " + MessageConst.getRandomQuote());
+       String msg =  "🌏 *𝘼𝙨𝙞𝙖 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 𝘾𝙡𝙤𝙨𝙚𝙙 \n" +
+        "⏰ 16:00:00 (4PM) \n\n* " + MessageConst.getRandomQuote();
+        sendToAllSubscribers(msg);
     }
 
     // London Session: 2:00 PM – 11:00 PM
@@ -131,7 +142,10 @@ public class GeneralAlert {
 
     @Scheduled(cron = "0 0 23 ? * MON-FRI", zone = "Asia/Phnom_Penh")
     void londonSessionClose() {
-        sendToAllSubscribers("🇬🇧 *London Session Closed* \n⏰ 23:00:00 (11PM)" + "\n\n* " + MessageConst.getRandomQuote());
+        String msg = "🇬🇧 *𝙇𝙤𝙣𝙙𝙤𝙣 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 𝘾𝙡𝙤𝙨𝙚𝙙" +
+                "⏰ 23:00:00 (11PM) \n\n" +
+                "* " + MessageConst.getRandomQuote();
+        sendToAllSubscribers(msg);
     }
 
     // New York Session: 8:00 PM – 5:00 AM (next day)
@@ -142,7 +156,9 @@ public class GeneralAlert {
 
     @Scheduled(cron = "0 0 5 ? * TUE-SAT", zone = "Asia/Phnom_Penh") // next day close
     void newYorkSessionClose() {
-        sendToAllSubscribers("🇺🇸 *New York Session Closed* \n⏰ 05:00:00 (5AM)" + "\n\n* " + MessageConst.getRandomQuote());
+        String msg = "🇺🇸 *𝙉𝙚𝙬 𝙔𝙤𝙧𝙠 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 𝘾𝙡𝙤𝙨𝙚𝙙* \n" + "⏰ 05:00:00 (5AM) \n\n" +
+                "* " + MessageConst.getRandomQuote();
+        sendToAllSubscribers(msg);
     }
 
 }
