@@ -113,7 +113,8 @@ public class TelegramBotService {
             case "/trend": return goldPriceService.showTechnicalAnalysis(false);
 
             default:
-                return proceedNextStep(chatId,command);
+                return aiService.generateText(chatId, command);
+//                return proceedNextStep(chatId,command);
         }
     }
 }
