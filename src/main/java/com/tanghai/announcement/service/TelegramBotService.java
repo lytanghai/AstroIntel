@@ -6,6 +6,8 @@ import com.tanghai.announcement.service.internet.ForexService;
 import com.tanghai.announcement.service.internet.GistService;
 import com.tanghai.announcement.service.internet.GoldPriceService;
 import com.tanghai.announcement.utilz.Formatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -15,6 +17,7 @@ import java.util.Map;
 @Service
 public class TelegramBotService {
 
+    private final Logger log = LoggerFactory.getLogger(TelegramBotService.class);
     private final TelegramSender telegramSender;
     private ForexService forexService;
     private final GistService gistService;
@@ -44,23 +47,25 @@ public class TelegramBotService {
 
     private String proceedNextStep(String chatId, String prompt) throws Exception {
 
-        if (waitingForPrompt.getOrDefault(chatId, false)) {
+        if(!prompt.contains("/")) {
+            return aiService.generateText(chatId, prompt);
+        }
 
+        if (waitingForPrompt.getOrDefault(chatId, false)) {
             waitingForPrompt.put(chatId, false); // clear waiting flag
             try {
-                return "Respond: " + aiService.generateText(prompt);
+                return "Respond: " + aiService.generateText(chatId, prompt);
             } catch (Exception e) {
                 waitingForPrompt.put(chatId, true); // allow retry if AI call fails
                 return "⚠️ Failed to generate AI response: "  + e.getMessage();
             }
-        } else {
+        }
+        else {
             return "Invalid Command!!!";
         }
     }
     private String getPrompt(boolean requirePermission, String chatId, String prompt) throws Exception {
-        if (!"678134373".equals(chatId)) {
-            return "❌ You have no privilege to use this command!";
-        }
+
         if(requirePermission) {
             // STEP 1: User typed "/ask" (start of the flow)
             if (prompt == null || prompt.isEmpty() || "/ask".equalsIgnoreCase(prompt)) {
@@ -70,16 +75,13 @@ public class TelegramBotService {
             // Default fallback
             return "❓ Unknown input. Use /ask to send a prompt to AI.";
         } else {
-            return aiService.generateText(prompt);
+            return aiService.generateText(chatId,prompt);
         }
 
     }
     private String processCommand(String chatId, String command) throws Exception {
 
-        if(!command.contains("/")) {
-            return getPrompt(false ,chatId, command);
-        }
-
+        log.info("incoming command {}", command);
         switch (command) {
             // command ask first before prompt
 //            case "/ask":
