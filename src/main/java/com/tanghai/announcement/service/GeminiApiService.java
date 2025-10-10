@@ -47,14 +47,15 @@ public class GeminiApiService {
 
         JsonNode root = objectMapper.readTree(response.getBody());
 
+        String responseStr = root.path("candidates")
+                .get(0).path("content").path("parts")
+                .get(0).path("text").asText();
+
+        if(responseStr.length() >= 4096) {
+            responseStr = responseStr.substring(0, 4095);
+        }
         // Extract generated text
-        return root.path("candidates")
-                .get(0)
-                .path("content")
-                .path("parts")
-                .get(0)
-                .path("text")
-                .asText();
+        return responseStr;
     }
 
     private String escapeJson(String text) {
