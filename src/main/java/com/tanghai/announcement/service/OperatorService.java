@@ -45,4 +45,8 @@ public class OperatorService {
     public boolean contain(String key) {
         return supportResistant.containsKey(key);
     }
+
+    public void clear() {
+        supportResistant.clear();
+    }
 }

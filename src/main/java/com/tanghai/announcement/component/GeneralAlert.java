@@ -161,4 +161,9 @@ public class GeneralAlert {
         sendToAllSubscribers(msg);
     }
 
+    @Scheduled(cron = "0 0 5 ? * MON-FRI", zone = "Asia/Phnom_Penh")
+    void clearSupportResistance() {
+        operatorService.clear();
+    }
+
 }

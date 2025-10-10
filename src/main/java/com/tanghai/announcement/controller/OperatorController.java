@@ -20,4 +20,9 @@ public class OperatorController {
         return operatorService.drawSupportResistance(supportResistanceReq);
     }
 
+    @PostMapping("/check/mark-sp")
+    public SupportResistanceReq getSupportResistanceReq(){
+        return operatorService.getSupportResistanceReq();
+    }
+
 }
