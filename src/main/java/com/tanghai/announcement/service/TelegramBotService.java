@@ -7,7 +7,6 @@ import com.tanghai.announcement.service.internet.GistService;
 import com.tanghai.announcement.service.internet.GoldPriceService;
 import com.tanghai.announcement.utilz.Formatter;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.HashMap;
@@ -49,19 +48,10 @@ public class TelegramBotService {
 
             waitingForPrompt.put(chatId, false); // clear waiting flag
             try {
-                String aiResponse = aiService.generateText(prompt); // call Gemini
-                return SendMessage.builder()
-                        .chatId(chatId)
-                        .text("🤖 Response:\n" + aiResponse)
-                        .build()
-                        .toString();
+                return "Respond: " + aiService.generateText(prompt);
             } catch (Exception e) {
                 waitingForPrompt.put(chatId, true); // allow retry if AI call fails
-                return SendMessage.builder()
-                        .chatId(chatId)
-                        .text("⚠️ Failed to generate AI response: " + e.getMessage() + "\nPlease try again:")
-                        .build()
-                        .toString();
+                return "⚠️ Failed to generate AI response: "  + e.getMessage();
             }
         } else {
             return "Invalid Command!!!";
@@ -75,19 +65,10 @@ public class TelegramBotService {
         // STEP 1: User typed "/ask" (start of the flow)
         if (prompt == null || prompt.isEmpty() || "/ask".equalsIgnoreCase(prompt)) {
             waitingForPrompt.put(chatId, true);
-            return SendMessage.builder()
-                    .chatId(chatId)
-                    .text("💬 Please enter your prompt for the AI (e.g., Summarize today's gold market):")
-                    .build()
-                    .toString();
+            return "💬 Please enter your prompt for the AI: ";
         }
-
         // Default fallback
-        return SendMessage.builder()
-                .chatId(chatId)
-                .text("❓ Unknown input. Use /ask to send a prompt to AI.")
-                .build()
-                .toString();
+        return "❓ Unknown input. Use /ask to send a prompt to AI.";
     }
     private String processCommand(String chatId, String command) throws Exception {
         switch (command) {
