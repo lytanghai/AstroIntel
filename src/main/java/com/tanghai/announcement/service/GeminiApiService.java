@@ -3,10 +3,7 @@ package com.tanghai.announcement.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,8 +20,9 @@ public class GeminiApiService {
      * Generate text content from Gemini using a prompt
      */
     public String generateText(String prompt) throws Exception {
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey;
+        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
+        // JSON request body
         String requestBody = "{\n" +
                 "  \"contents\": [\n" +
                 "    {\n" +
@@ -36,15 +34,17 @@ public class GeminiApiService {
                 "  ]\n" +
                 "}";
 
+        // Set headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-goog-api-key", apiKey);  // Use x-goog-api-key header
 
         HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
         JsonNode root = objectMapper.readTree(response.getBody());
 
-        // Extract only the generated text
+        // Extract generated text
         return root.path("candidates")
                 .get(0)
                 .path("content")
