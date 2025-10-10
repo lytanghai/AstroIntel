@@ -15,7 +15,7 @@ public class TelegramWebhookController {
     }
 
     @PostMapping("/webhook")
-    public void onUpdateReceived(@RequestBody Update update) {
+    public void onUpdateReceived(@RequestBody Update update) throws Exception {
         telegramBotService.handleUpdate(update);
     }
 }

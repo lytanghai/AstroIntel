@@ -19,3 +19,7 @@ server:
 gist:
   github-token: ${GITHUB_TOKEN}
   gist-id: ${GIST_ID}
+
+google:
+  api:
+    key: ${GEMINI_KEY}

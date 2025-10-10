@@ -7,7 +7,11 @@ import com.tanghai.announcement.service.internet.GistService;
 import com.tanghai.announcement.service.internet.GoldPriceService;
 import com.tanghai.announcement.utilz.Formatter;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class TelegramBotService {
@@ -16,21 +20,22 @@ public class TelegramBotService {
     private ForexService forexService;
     private final GistService gistService;
     private final GoldPriceService goldPriceService;
+    private final GeminiApiService aiService;
 
-    public TelegramBotService(TelegramSender telegramSender, GistService gistService, GoldPriceService goldPriceService) {
+    private Map<String, Boolean> waitingForPrompt = new HashMap<>();
+
+    public TelegramBotService(TelegramSender telegramSender, GistService gistService, GoldPriceService goldPriceService, GeminiApiService aiService) {
         this.telegramSender = telegramSender;
         this.gistService = gistService;
         this.goldPriceService = goldPriceService;
+        this.aiService = aiService;
     }
 
-    public void handleUpdate(Update update) {
+    public void handleUpdate(Update update) throws Exception {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String chatId = update.getMessage().getChatId().toString();
-            String username = update.getMessage().getFrom().getUserName();
-            String user = (username != null ? "@" + username :  update.getMessage().getFrom().getFirstName());
             String reply = processCommand(
                     chatId,
-                    user,
                     update.getMessage().getText()
             );
 
@@ -38,8 +43,57 @@ public class TelegramBotService {
         }
     }
 
-    private String processCommand(String chatId, String user, String command) {
+    private String proceedNextStep(String chatId, String prompt) throws Exception {
+
+        if (waitingForPrompt.getOrDefault(chatId, false)) {
+
+            waitingForPrompt.put(chatId, false); // clear waiting flag
+            try {
+                String aiResponse = aiService.generateText(prompt); // call Gemini
+                return SendMessage.builder()
+                        .chatId(chatId)
+                        .text("🤖 Response:\n" + aiResponse)
+                        .build()
+                        .toString();
+            } catch (Exception e) {
+                waitingForPrompt.put(chatId, true); // allow retry if AI call fails
+                return SendMessage.builder()
+                        .chatId(chatId)
+                        .text("⚠️ Failed to generate AI response: " + e.getMessage() + "\nPlease try again:")
+                        .build()
+                        .toString();
+            }
+        } else {
+            return "Invalid Command!!!";
+        }
+    }
+    private String getPrompt(String chatId, String prompt) throws Exception {
+        if (!"678134373".equals(chatId)) {
+            return "❌ You have no privilege to use this command!";
+        }
+
+        // STEP 1: User typed "/ask" (start of the flow)
+        if (prompt == null || prompt.isEmpty() || "/ask".equalsIgnoreCase(prompt)) {
+            waitingForPrompt.put(chatId, true);
+            return SendMessage.builder()
+                    .chatId(chatId)
+                    .text("💬 Please enter your prompt for the AI (e.g., Summarize today's gold market):")
+                    .build()
+                    .toString();
+        }
+
+        // Default fallback
+        return SendMessage.builder()
+                .chatId(chatId)
+                .text("❓ Unknown input. Use /ask to send a prompt to AI.")
+                .build()
+                .toString();
+    }
+    private String processCommand(String chatId, String command) throws Exception {
         switch (command) {
+            case "/ask":
+                return getPrompt(chatId, command);
+
             case "/calendar": return Formatter.formatForexCalendar(ForexService.economicCalendar());
 
             case "/gold": return Formatter.formatGoldPrice(ForexService.goldApiResp());
@@ -65,7 +119,8 @@ public class TelegramBotService {
 
             case "/trend": return goldPriceService.showTechnicalAnalysis(false);
 
-            default: return "Unknown command: " + command;
+            default:
+                return proceedNextStep(chatId,command);
         }
     }
 }
