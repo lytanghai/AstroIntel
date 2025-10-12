@@ -29,7 +29,7 @@ public class GeneralAlert {
         this.operatorService = operatorService;
     }
 
-    private Double PREVIOUS_30_MIN_PRICE = 0.0;
+    private double PREVIOUS_30_MIN_PRICE = 0.0;
 
     private static final String MARKET_OPEN_MSG =
             "🌅 𝙈𝙖𝙧𝙠𝙚𝙩 𝙊𝙥𝙚𝙣* \n\n" +
@@ -49,7 +49,7 @@ public class GeneralAlert {
     private static final String ASIA_SESSION_MSG =
             "🌏 𝘼𝙨𝙞𝙖 𝙎𝙚𝙨𝙨𝙞𝙤𝙣* \n\n" +
             "📢 The Asia trading session has started.\n" +
-            "⏰ Trading hours: 07:00 AM – 04:00 PM GMT\n" +
+            "⏰ Trading hours: 07:00 AM – 04:00 PM\n" +
             "⏰ Average Pips Movement: 20-40 Points\n" +
             "💡 Watch out for volatility in Asian markets!\n\n" +
             "* " + MessageConst.getRandomQuote();
@@ -57,7 +57,7 @@ public class GeneralAlert {
     private static final String LONDON_SESSION_MSG =
             "🚨 *𝙇𝙤𝙣𝙙𝙤𝙣 𝙎𝙚𝙨𝙨𝙞𝙤𝙣* \n\n" +
             "📢 The London trading session has started.\n" +
-            "⏰ Trading hours: 02:00 PM – 11:00 PM GMT\n" +
+            "⏰ Trading hours: 02:00 PM – 11:00 PM\n" +
             "⏰ Average Pips Movement: 30-70 Points\n" +
             "💡 Expect increased activity in gold and forex markets!\n\n" +
             "* " + MessageConst.getRandomQuote();
@@ -65,7 +65,7 @@ public class GeneralAlert {
     private static final String NEW_YORK_SESSION_MSG =
             "🚨 *𝙉𝙚𝙬 𝙔𝙤𝙧𝙠 𝙎𝙚𝙨𝙨𝙞𝙤𝙣 \n\n" +
             "📢 The New York trading session has started.\n" +
-            "⏰ Trading hours: 08:00 PM – 05:00 AM GMT\n" +
+            "⏰ Trading hours: 08:00 PM – 05:00 AM\n" +
             "⏰ Average Pips Movement: 40-80 Points\n" +
             "💡 Major economic news may impact gold prices!\n\n" +
             "* " + MessageConst.getRandomQuote();
@@ -111,12 +111,12 @@ public class GeneralAlert {
         }
     }
 
-    @Scheduled(cron = "0 0 5 ? * MON", zone = "GMT")
+    @Scheduled(cron = "0 0 5 ? * MON", zone = "Asia/Phnom_Penh")
     void marketOpen() {
         sendToAllSubscribers(MARKET_OPEN_MSG);
     }
 
-    @Scheduled(cron = "0 0 4 ? * SAT", zone = "GMT")
+    @Scheduled(cron = "0 0 4 ? * SAT", zone = "Asia/Phnom_Penh")
     void marketClose() {
         sendToAllSubscribers(MARKET_CLOSE_MSG);
     }
