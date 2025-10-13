@@ -1,5 +1,6 @@
 package com.tanghai.announcement.controller;
 
+import com.tanghai.announcement.dto.req.SupportResistance;
 import com.tanghai.announcement.dto.req.SupportResistanceReq;
 import com.tanghai.announcement.service.OperatorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,8 @@ public class OperatorController {
     private OperatorService operatorService;
 
     @PostMapping("/mark-sp")
-    public SupportResistanceReq supportResistanceReq(@RequestBody SupportResistanceReq supportResistanceReq){
-        return operatorService.drawSupportResistance(supportResistanceReq);
+    public void supportResistanceReq(@RequestBody SupportResistance supportResistanceReq){
+        operatorService.drawSupportResistance(supportResistanceReq);
     }
 
     @PostMapping("/check/mark-sp")

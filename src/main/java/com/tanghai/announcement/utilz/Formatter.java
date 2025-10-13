@@ -68,9 +68,9 @@ public class Formatter {
         double dS3 = s3 > 0 ? currentPrice - s3 : 0;
 
         return  "✨ 𝙐𝙋𝘿𝘼𝙏𝙀 តម្លៃទីផ្សារមាស ✨\n"
-                + "ᯓ★ Current Price: " + currentPrice
-                + " USD/oz ≈ " + calculateToLocalPrice(currentPrice) + "៛/តម្លឹង\n"
-                + "⏱️ 30-min Change: " + formattedDiff + " pts → " + trendType + "\n\n"
+                + "ᯓ★ Current Price: \n" + currentPrice
+                + " USD/oz ≈ " + calculateToLocalPrice(currentPrice) + "$/តម្លឹង\n"
+                + "⏱️ 30-min Change: \n" + formattedDiff + " pts → " + trendType + "\n\n"
                 + "📊 𝙎𝙪𝙥𝙥𝙤𝙧𝙩 𝙇𝙚𝙫𝙚𝙡𝙨 \n"
                 + "𝙎𝙪𝙥𝙥𝙤𝙧𝙩 1: " + s1 + " (" + formatDiff(dS1) + ")\n"
                 + "𝙎𝙪𝙥𝙥𝙤𝙧𝙩 2: " + s2 + " (" + formatDiff(dS2) + ")\n"

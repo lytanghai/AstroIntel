@@ -1,8 +1,12 @@
 package com.tanghai.announcement.service;
 
+import com.tanghai.announcement.dto.req.SupportResistance;
 import com.tanghai.announcement.dto.req.SupportResistanceReq;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,16 +15,24 @@ public class OperatorService {
 
     private final Map<String, Object> supportResistant = new ConcurrentHashMap<>();
 
-    public SupportResistanceReq drawSupportResistance(SupportResistanceReq req) {
-        if (req != null) {
-            if (req.getR1() != null) supportResistant.put("R1", req.getR1());
-            if (req.getR2() != null) supportResistant.put("R2", req.getR2());
-            if (req.getR3() != null) supportResistant.put("R3", req.getR3());
-            if (req.getS1() != null) supportResistant.put("S1", req.getS1());
-            if (req.getS2() != null) supportResistant.put("S2", req.getS2());
-            if (req.getS3() != null) supportResistant.put("S3", req.getS3());
+    public void drawSupportResistance(SupportResistance req) {
+
+        if (req.getResistances() != null && !req.getResistances().isEmpty()) {
+            List<Double> sortedResistances = new ArrayList<>(req.getResistances());
+            Collections.sort(sortedResistances);
+            for (int i = 0; i < sortedResistances.size(); i++) {
+                supportResistant.put("R" + (i + 1), sortedResistances.get(i));
+            }
         }
-        return req;
+
+        if (req.getSupports() != null && !req.getSupports().isEmpty()) {
+            List<Double> sortedSupports = new ArrayList<>(req.getSupports());
+            Collections.sort(sortedSupports);
+            for (int i = 0; i < sortedSupports.size(); i++) {
+                supportResistant.put("S" + (i + 1), sortedSupports.get(i));
+            }
+        }
+
     }
 
     public SupportResistanceReq getSupportResistanceReq() {
