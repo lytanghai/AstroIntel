@@ -90,23 +90,23 @@ public class TelegramBotService {
         // --- Telegram-friendly message ---
         String message = String.format(
                 "*=== 💰𝗕𝘂𝗱𝗴𝗲𝘁 𝗕𝗿𝗲𝗮𝗸𝗱𝗼𝘄𝗻 ===*\n" +
-                        "💵 * 𝗗𝗮𝘁𝗲:* %s\n" +
+                        "* 𝗗𝗮𝘁𝗲: %s\n" +
                         "\n" +
-                        "💾 *𝗦𝗮𝘃𝗶𝗻𝗴 (50%%):* $%.2f\n" +
-                        "    └─ 💼 *Investment [𝗕𝗶𝗻𝗮𝗻𝗰𝗲 x 𝗘𝗫𝗡𝗘𝗦𝗦]:* $%.2f\n" +
-                        "    └─ 🏦 *Bank [𝗪𝗜𝗡𝗚]:* $%.2f\n" +
+                        "*𝗦𝗮𝘃𝗶𝗻𝗴 (50%%): $%.2f\n" +
+                        "    └─*Invest[𝗕𝗶𝗻𝗮𝗻𝗰𝗲 x 𝗘𝗫𝗡𝗘𝗦𝗦]: $%.2f\n" +
+                        "    └─*Bank[𝗪𝗜𝗡𝗚]: $%.2f\n" +
                         "\n" +
-                        "📦 *𝗥𝗲𝘀𝗲𝗿𝘃𝗲 [𝗔𝗕𝗔] (20%%):* $%.2f\n" +
+                        "*𝗥𝗲𝘀𝗲𝗿𝘃𝗲[𝗔𝗕𝗔] (20%%): $%.2f\n" +
                         "\n" +
-                        "🛒 *𝗕𝗮𝘀𝗶𝗰 𝗡𝗲𝗲𝗱  (30%%):* $%.2f\n" +
-                        "    └─ 📶 *Wifi:* $%.2f\n" +
-                        "    └─ ⛽ *Gasoline:* $%.2f\n" +
-                        "    └─ 💡 *PTU:* $%.2f\n" +
-                        "    └─ 🛢  *Oil:* $%.2f\n" +
-                        "    └─ 🏠 *Remaining Basic:* $%.2f\n" +
+                        "*𝗕𝗮𝘀𝗶𝗰 𝗡𝗲𝗲𝗱  (30%%): $%.2f\n" +
+                        "    └─*Wifi: $%.2f\n" +
+                        "    └─*Gasoline: $%.2f\n" +
+                        "    └─*PTU: $%.2f\n" +
+                        "    └─*Oil: $%.2f\n" +
+                        "    └─*Remaining: $%.2f\n" +
                         "\n" +
                         "-----------------------\n" +
-                        "🧮 *𝗖𝗵𝗲𝗰𝗸 𝗧𝗼𝘁𝗮𝗹:* $%.2f ✅",
+                        "🧮 *𝗖𝗵𝗲𝗰𝗸 𝗧𝗼𝘁𝗮𝗹: $%.2f ✅",
                 date,
                 saving, investment, bank,
                 reserve,
@@ -140,6 +140,9 @@ public class TelegramBotService {
                     }
                 }
 
+            case "/clsbud": MonthlyReserveCache.clear();
+                        return "𝘔𝘰𝘯𝘵𝘩𝘭𝘺 𝘉𝘶𝘥𝘨𝘦𝘵 𝘩𝘢𝘴 𝘣𝘦𝘦𝘯 𝘤𝘭𝘦𝘢𝘳𝘦𝘥 𝘴𝘶𝘤𝘤𝘦𝘴𝘴𝘧𝘶𝘭𝘭𝘺!";
+
             case "/calendar":
                 return Formatter.formatForexCalendar(ForexService.economicCalendar());
 
@@ -152,6 +155,8 @@ public class TelegramBotService {
                         "💰 /gold \\- Show the real-time live price of gold\n" +
                         "🔔 /subscribe \\- Receive alerts and important announcements\n" +
                         "❌ /unsubscribe \\- Stop receiving alerts and announcements\n\n" +
+                        "📅 /budget \\- Check monthly budget breakdown\n\n" +
+                        "⭐ /clsbud  \\- Clear monthly budget\n\n" +
                         "* " + MessageConst.getRandomQuote() +
                         "\n\n_Use the commands exactly as shown above._";
 
