@@ -254,15 +254,25 @@ public class TelegramBotService {
                 return Formatter.formatGoldPrice(ForexService.goldApiResp());
 
             case "/help":
-                return "*🤖 Ｂｏｔ Ｃｏｍｍａｎｄｓ Ｈｅｌｐ*\n\n" +
-                        "📅 /calendar \\- Show this week's important events (US)\n" +
-                        "💰 /gold \\- Show the real-time live price of gold\n" +
-                        "🔔 /subscribe \\- Receive alerts and important announcements\n" +
-                        "❌ /unsubscribe \\- Stop receiving alerts and announcements\n\n" +
-                        "📅 /budget \\- Check monthly budget breakdown\n\n" +
-                        "⭐ /clsbud  \\- Clear monthly budget\n\n" +
-                        "* " + MessageConst.getRandomQuote() +
-                        "\n\n_Use the commands exactly as shown above._";
+                return
+                    "*🤖 Ｂｏｔ Ｃｏｍｍａｎｄｓ Ｈｅｌｐ*\n\n" +
+                    "📅 /calendar \\- Show this week's important events (US)\n" +
+                    "💰 /gold \\- Show the real\\-time live price of gold\n" +
+                    "🔔 /subscribe \\- Receive alerts and important announcements\n" +
+                    "❌ /unsubscribe \\- Stop receiving alerts and announcements\n" +
+                    
+                    "📊 /budget \\- Check monthly budget breakdown\n" +
+                    "⭐ /clsbud \\- Clear monthly budget\n" +
+                    
+                    "🔁 /llist \\- List recurring alerts\n" +
+                    "⏰ /loop \\- Manage looping reminders\n" +
+                        "• *Add:* `/loop +10m drink water`\n" +
+                        "• *Remove:* `/loop - 1`\n" +
+                        "• *Clear:* `/loop *`\n" +
+                    
+                    "💡 *Tip:* _Use the commands exactly as shown above._\n\n"+
+                      MessageConst.getRandomQuote();
+
 
             case "/subscribe":
                 gistService.subscribeToGist(chatId);
