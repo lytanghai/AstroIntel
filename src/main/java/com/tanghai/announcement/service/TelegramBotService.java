@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class TelegramBotService {
@@ -23,6 +26,12 @@ public class TelegramBotService {
     private final GistService gistService;
     private final GoldPriceService goldPriceService;
     private final GeminiApiService aiService;
+
+    private final Map<Integer, ScheduledFuture<?>> recurringTasks = new ConcurrentHashMap<>();
+    private final Map<Integer, String> recurringMessages = new ConcurrentHashMap<>();
+    private final Map<Integer, Long> recurringIntervals = new ConcurrentHashMap<>(); // seconds
+    private final ScheduledExecutorService schedulerControl = Executors.newScheduledThreadPool(2);
+    private final AtomicInteger reminderCounter = new AtomicInteger(1);
 
     public TelegramBotService(TelegramSender telegramSender, GistService gistService, GoldPriceService goldPriceService, GeminiApiService aiService) {
         this.telegramSender = telegramSender;
@@ -40,6 +49,94 @@ public class TelegramBotService {
             );
 
             telegramSender.send(chatId, reply);
+        }
+    }
+
+    private String listReminder() {
+        if (recurringMessages.isEmpty()) {
+            return "📭 No active looping reminders.";
+        }
+        StringBuilder sb = new StringBuilder("📋 *Active Looping Reminders:*\n");
+        recurringMessages.forEach((index, msgText) -> {
+            ScheduledFuture<?> task = recurringTasks.get(index);
+            Long interval = recurringIntervals.get(index);
+            if (task != null && !task.isCancelled()) {
+                long secondsLeft = task.getDelay(TimeUnit.SECONDS);
+                sb.append(index)
+                        .append(". ")
+                        .append(msgText)
+                        .append(" — every ")
+                        .append(DateUtilz.formatDuration(interval))
+                        .append(", next in ")
+                        .append(DateUtilz.formatDuration(secondsLeft))
+                        .append("\n");
+            }
+        });
+        return sb.toString();
+    }
+    public String handleLoopRemindMe(String chatId, String message) {
+        try {
+            String[] parts = message.trim().split(" ", 3);
+            if(parts.length < 3){
+                return "Invalid";
+            }
+            String action = parts[1].trim();
+
+            // --- 2️⃣ CLEAR ALL ---
+            if (action.equals("*")) {
+                recurringTasks.values().forEach(task -> task.cancel(true));
+                recurringTasks.clear();
+                recurringMessages.clear();
+                recurringIntervals.clear();
+                reminderCounter.set(1);
+                return "🧹 All looping reminders cleared.";
+            }
+
+            // --- 3️⃣ REMOVE BY INDEX ---
+            if (action.equals("-")) {
+                try {
+                    int index = Integer.parseInt(parts[2]);
+                    ScheduledFuture<?> task = recurringTasks.remove(index);
+                    String msgText = recurringMessages.remove(index);
+                    recurringIntervals.remove(index);
+                    if (task != null) {
+                        task.cancel(true);
+                        return "❌ Removed reminder #" + index + ": " + msgText;
+                    } else {
+                        return "⚠️ No reminder found at index #" + index;
+                    }
+                } catch (NumberFormatException e) {
+                    return "❌ Invalid index. Must be a number.";
+                }
+            }
+
+            // --- 4️⃣ ADD NEW LOOP REMINDER ---
+            if (action.startsWith("+")) {
+                if (parts.length < 3) {
+                    return "Usage: /loop +[time] [message]";
+                }
+
+                String timePart = action.substring(1); // remove '+'
+                String reminderText = parts[2];
+                long delaySeconds = DateUtilz.parseTimeToSeconds(timePart);
+
+                int index = reminderCounter.getAndIncrement();
+
+                ScheduledFuture<?> task = schedulerControl.scheduleAtFixedRate(() -> {
+                    telegramSender.send(chatId, "🔁 Reminder #" + index + ": " + reminderText);
+                }, delaySeconds, delaySeconds, TimeUnit.SECONDS);
+
+                recurringTasks.put(index, task);
+                recurringMessages.put(index, reminderText);
+                recurringIntervals.put(index, delaySeconds);
+
+                return "✅ Added reminder #" + index + " every " + timePart + ": " + reminderText;
+            }
+
+            return "❌ Unknown command type. Use +, -, list, or *.";
+
+        } catch (Exception e) {
+            return "⚠️ Error processing /loop: " + e.getMessage();
         }
     }
 
@@ -127,8 +224,15 @@ public class TelegramBotService {
             return this.budgetBreakdown(command, chatId);
         }
 
-        switch (command) {
+        if(command.startsWith("/loop")) {
+            return this.handleLoopRemindMe(chatId, command);
+        }
 
+        switch (command) {
+            case "/llist":
+                return this.listReminder();
+
+//-----------------------------------------------------------------
             case "/budget":
                 if (!"678134373".equals(chatId)) {
                     return "𝙔𝙤𝙪 𝙝𝙖𝙫𝙚 𝙣𝙤 𝙥𝙧𝙞𝙫𝙞𝙡𝙚𝙜𝙚 𝙩𝙤 𝙪𝙨𝙚 𝙩𝙝𝙞𝙨 𝙘𝙤𝙢𝙢𝙖𝙣𝙙❗";
