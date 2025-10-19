@@ -77,9 +77,6 @@ public class TelegramBotService {
     public String handleLoopRemindMe(String chatId, String message) {
         try {
             String[] parts = message.trim().split(" ", 3);
-            if(parts.length < 3){
-                return "Invalid";
-            }
             String action = parts[1].trim();
 
             // --- 2️⃣ CLEAR ALL ---
