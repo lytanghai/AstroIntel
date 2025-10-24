@@ -19,9 +19,9 @@ public class RebootComponent  {
     public void onStartup() {
         StringBuilder message = new StringBuilder();
 
-        message.append("********** 𝘼𝙎𝙏𝙍𝙊 𝙄𝙉𝙏𝙀𝙇 𝘼𝙋𝙋 𝙎𝙏𝘼𝙍𝙏𝙀𝘿 **********\n");
+        message.append("***** 𝘼𝙎𝙏𝙍𝙊 𝙄𝙉𝙏𝙀𝙇 𝘼𝙋𝙋 𝙎𝙏𝘼𝙍𝙏𝙀𝘿 *****\n");
         message.append("𝙑𝙀𝙍𝙎𝙄𝙊𝙉   : ").append(appProperties.getVersion()).append("\n");
-        message.append("What's New?:\n");
+        message.append("What's New?:\n\n");
 
         if (appProperties.getFeatures() != null && !appProperties.getFeatures().isEmpty()) {
             for (String feature : appProperties.getFeatures()) {
@@ -30,8 +30,7 @@ public class RebootComponent  {
         } else {
             return;
         }
-
-        message.append("********************************************");
+        message.append("\n\n********************************************");
 
         telegramSender.send("678134373", message.toString());
     }
