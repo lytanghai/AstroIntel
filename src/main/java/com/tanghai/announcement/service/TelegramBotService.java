@@ -12,6 +12,7 @@ import com.tanghai.announcement.utilz.Formatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -299,13 +300,8 @@ public class TelegramBotService {
     }
 
     public String resetWebhook() {
-        try {
-            String fullUrl = "https://astrointel.onrender.com" + "/telegram/webhook";
-            telegramComponent.execute(SetWebhook.builder().url(fullUrl).build());
-            return "✅ Webhook reset to: " + fullUrl;
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-            return "❌ Failed to reset webhook: " + e.getMessage();
-        }
+        RestTemplate restTemplate = new RestTemplate();
+        String fullUrl = "https://astrointel.onrender.com/telegram/webhook/reset";
+        return restTemplate.getForObject(fullUrl, String.class);
     }
 }
