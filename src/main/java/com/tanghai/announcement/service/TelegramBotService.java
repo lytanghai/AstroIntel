@@ -1,6 +1,7 @@
 package com.tanghai.announcement.service;
 
 import com.tanghai.announcement.cache.MonthlyReserveCache;
+import com.tanghai.announcement.component.TelegramComponent;
 import com.tanghai.announcement.component.TelegramSender;
 import com.tanghai.announcement.constant.MessageConst;
 import com.tanghai.announcement.service.internet.ForexService;
@@ -11,7 +12,9 @@ import com.tanghai.announcement.utilz.Formatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Date;
 import java.util.Map;
@@ -27,17 +30,20 @@ public class TelegramBotService {
     private final GoldPriceService goldPriceService;
     private final GeminiApiService aiService;
 
+    private final TelegramComponent telegramComponent;
+
     private final Map<Integer, ScheduledFuture<?>> recurringTasks = new ConcurrentHashMap<>();
     private final Map<Integer, String> recurringMessages = new ConcurrentHashMap<>();
     private final Map<Integer, Long> recurringIntervals = new ConcurrentHashMap<>(); // seconds
     private final ScheduledExecutorService schedulerControl = Executors.newScheduledThreadPool(2);
     private final AtomicInteger reminderCounter = new AtomicInteger(1);
 
-    public TelegramBotService(TelegramSender telegramSender, GistService gistService, GoldPriceService goldPriceService, GeminiApiService aiService) {
+    public TelegramBotService(TelegramSender telegramSender, GistService gistService, GoldPriceService goldPriceService, GeminiApiService aiService, TelegramComponent telegramComponent) {
         this.telegramSender = telegramSender;
         this.gistService = gistService;
         this.goldPriceService = goldPriceService;
         this.aiService = aiService;
+        this.telegramComponent = telegramComponent;
     }
 
     public void handleUpdate(Update update) throws Exception {
@@ -190,9 +196,9 @@ public class TelegramBotService {
                         "    └─*Invest[𝗕𝗶𝗻𝗮𝗻𝗰𝗲 x 𝗘𝗫𝗡𝗘𝗦𝗦]: $%.2f\n" +
                         "    └─*Bank[𝗪𝗜𝗡𝗚]: $%.2f\n" +
                         "\n" +
-                        "*𝗥𝗲𝘀𝗲𝗿𝘃𝗲[𝗔𝗕𝗔] (20%%): $%.2f\n" +
+                        "*𝗥𝗲𝘀𝗲𝗿𝘃𝗲[𝘼𝘾𝙀𝙇𝙀𝘿𝘼] (20%%): $%.2f\n" +
                         "\n" +
-                        "*𝗕𝗮𝘀𝗶𝗰 𝗡𝗲𝗲𝗱  (30%%): $%.2f\n" +
+                        "*𝗕𝗮𝘀𝗶𝗰 𝗡𝗲𝗲𝗱[𝘼𝘽𝘼] (30%%): $%.2f\n" +
                         "    └─*Wifi: $%.2f\n" +
                         "    └─*Gasoline: $%.2f\n" +
                         "    └─*PTU: $%.2f\n" +
@@ -240,6 +246,7 @@ public class TelegramBotService {
                         return "𝗣𝗹𝗲𝗮𝘀𝗲 𝗰𝗿𝗲𝗮𝘁𝗲 𝗮 𝗻𝗲𝘄 𝗯𝘂𝗱𝗴𝗲𝘁 𝗯𝗿𝗲𝗮𝗸𝗱𝗼𝘄𝗻 𝗱𝘂𝗲 𝘁𝗼 𝘀𝗲𝗿𝘃𝗶𝗰𝗲 𝗿𝗲𝘀𝘁𝗮𝗿𝘁𝗲𝗱!!! eg. *monthly: xxx$";
                     }
                 }
+            case "/rswh": return this.resetWebhook();
 
             case "/clsbud": MonthlyReserveCache.clear();
                         return "𝘔𝘰𝘯𝘵𝘩𝘭𝘺 𝘉𝘶𝘥𝘨𝘦𝘵 𝘩𝘢𝘴 𝘣𝘦𝘦𝘯 𝘤𝘭𝘦𝘢𝘳𝘦𝘥 𝘴𝘶𝘤𝘤𝘦𝘴𝘴𝘧𝘶𝘭𝘭𝘺!";
@@ -288,6 +295,17 @@ public class TelegramBotService {
 
             default:
                 return aiService.generateText(chatId, command);
+        }
+    }
+
+    public String resetWebhook() {
+        try {
+            String fullUrl = "https://astrointel.onrender.com" + "/telegram/webhook";
+            telegramComponent.execute(SetWebhook.builder().url(fullUrl).build());
+            return "✅ Webhook reset to: " + fullUrl;
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            return "❌ Failed to reset webhook: " + e.getMessage();
         }
     }
 }
