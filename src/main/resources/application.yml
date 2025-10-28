@@ -14,8 +14,8 @@ app:
   base-url: https://astrointel.onrender.com
   version: 1.1.2
   features:
-    - Feature add asset
-    - Summary asset
+    - Update feature add asset (registration format)
+    - Summary asset (new format)
 
 server:
   port: 8080

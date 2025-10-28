@@ -314,21 +314,32 @@ public class TelegramBotService {
         current.put("data", dataList);
         gistService.updateGistContent(current, false, TelegramConst.MONTHLY);
 
-        // Telegram-friendly summary
         StringBuilder sb = new StringBuilder();
-        sb.append("────────────────────────────────────────\n");
-        sb.append("💠  MONTHLY CRYPTO UPDATE\n");
-        sb.append("────────────────────────────────────────\n");
-        sb.append("Yay! Another Month, Another Investment Cycle 🎉\n\n");
-        sb.append(String.format("Symbol       : %s\n", monthlyCryptoReq.getSymbol()));
-        sb.append(String.format("Amount       : %.2f USDT\n", monthlyCryptoReq.getAmount()));
-        sb.append(String.format("Converted    : %.4f %s\n", monthlyCryptoReq.getConverted(), monthlyCryptoReq.getSymbol()));
-        sb.append(String.format("Buy Price    : %.2f\n", monthlyCryptoReq.getBuyAt()));
-        sb.append(String.format("Exchange     : %s\n", monthlyCryptoReq.getExchangeName()));
-        sb.append(String.format("Network Type : %s\n", monthlyCryptoReq.getNetworkType()));
-        sb.append(String.format("Network Fee  : %.4f %s\n\n", monthlyCryptoReq.getNetworkFee(), monthlyCryptoReq.getNetworkType()));
-        sb.append("Consistency builds wealth. Stay focused. 🚀\n");
-        sb.append("─────────────────────────────────────────────");
+        sb.append("╔════════════════════════════════╗\n");
+        sb.append("║ 💠 *MONTHLY CRYPTO UPDATE* 💠 ║\n");
+        sb.append("╚════════════════════════════════╝\n\n");
+
+        sb.append(String.format("📌 Symbol       : %s\n", monthlyCryptoReq.getSymbol()));
+        sb.append(String.format("💰 Amount       : %.2f USDT\n", monthlyCryptoReq.getAmount()).concat(" ").concat(monthlyCryptoReq.getSymbol()));
+        sb.append(String.format("🔄 Converted    : %.4f %s\n", monthlyCryptoReq.getConverted(), monthlyCryptoReq.getSymbol()));
+        sb.append(String.format("🛒 Buy Price    : %.2f\n", monthlyCryptoReq.getBuyAt()));
+        sb.append(String.format("🏦 Exchange     : %s\n", monthlyCryptoReq.getExchangeName()));
+        sb.append(String.format("🌐 Network      : %s\n", monthlyCryptoReq.getNetworkType()));
+        sb.append(String.format("⚡ Network Fee  : %.4f %s\n", monthlyCryptoReq.getNetworkFee(), monthlyCryptoReq.getNetworkType()));
+
+        // Optional: progress bar showing investment portion
+        double percentage = monthlyCryptoReq.getConverted() / monthlyCryptoReq.getAmount(); // simple example
+        int bars = (int) (percentage * 10);
+        sb.append("📊 Progress     : [");
+        for (int i = 0; i < 10; i++) {
+            if (i < bars) sb.append("█");
+            else sb.append("░");
+        }
+        sb.append("] ").append(String.format("%.0f%%\n\n", percentage * 100));
+
+        sb.append("🎯 *Consistency builds wealth. Stay focused!* 🚀\n");
+        sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
 
         return sb.toString();
     }
@@ -378,19 +389,37 @@ public class TelegramBotService {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("───────────────────────────────\n");
-        sb.append("💠  MONTHLY CRYPTO SUMMARY\n");
-        sb.append("───────────────────────────────\n");
+        sb.append("╔════════════════════════════════════╗\n");
+        sb.append("║ 💠 *MONTHLY CRYPTO SUMMARY* 💠 ║\n");
+        sb.append("╚════════════════════════════════════╝\n\n");
+
+// Calculate total amount for portfolio percentage
+        double totalAmount = summaryList.stream()
+                .mapToDouble(SummaryCryptoSavingResp::getAmount)
+                .sum();
+
+// Sort the list descending by amount
+        summaryList.sort((a, b) -> Double.compare(b.getAmount(), a.getAmount()));
 
         for (SummaryCryptoSavingResp summary : summaryList) {
-            sb.append(String.format("Symbol       : %s\n", summary.getSymbol()));
-            sb.append(String.format("Amount       : %.2f\n", summary.getAmount()));
-            sb.append(String.format("Converted    : %.4f\n", summary.getConverted()));
-            sb.append(String.format("Exchange    : %s\n", summary.getExchangeName()));
+            sb.append(String.format("📌 *Symbol*     : %s\n", summary.getSymbol()));
+            sb.append(String.format("💰 *Amount*     : %.2f USDT\n", summary.getAmount()));
+            sb.append(String.format("🔄 *Converted*  : %.4f %s\n", summary.getConverted(), summary.getSymbol()));
+            sb.append(String.format("🏦 *Exchange*   : %s\n", summary.getExchangeName()));
+
+            // Calculate asset percentage
+            double assetPercent = summary.getAmount() / totalAmount;
+            int bars = (int) (assetPercent * 10); // 10-bar scale
+            sb.append("📊 *Portfolio*  : [");
+            for (int i = 0; i < 10; i++) {
+                sb.append(i < bars ? "█" : "░");
+            }
+            sb.append("] ").append(String.format("%.0f%%\n", assetPercent * 100));
+
             sb.append("───────────────────────────────\n");
         }
 
-        sb.append("Keep stacking consistently! 🚀");
+        sb.append("🎯 *Keep stacking consistently! 🚀*");
 
         return sb.toString();
     }
@@ -425,7 +454,7 @@ public class TelegramBotService {
                 } else {
                     return this.formatSummaryForTelegram(summaryCryptoSavingResp());
                 }
-//-----------------------------------------------------------------
+            //-----------------------------------------------------------------
             case "/budget":
                 if (!"678134373".equals(chatId)) {
                     return "𝙔𝙤𝙪 𝙝𝙖𝙫𝙚 𝙣𝙤 𝙥𝙧𝙞𝙫𝙞𝙡𝙚𝙜𝙚 𝙩𝙤 𝙪𝙨𝙚 𝙩𝙝𝙞𝙨 𝙘𝙤𝙢𝙢𝙖𝙣𝙙❗";
@@ -436,16 +465,18 @@ public class TelegramBotService {
                         return "𝗣𝗹𝗲𝗮𝘀𝗲 𝗰𝗿𝗲𝗮𝘁𝗲 𝗮 𝗻𝗲𝘄 𝗯𝘂𝗱𝗴𝗲𝘁 𝗯𝗿𝗲𝗮𝗸𝗱𝗼𝘄𝗻 𝗱𝘂𝗲 𝘁𝗼 𝘀𝗲𝗿𝘃𝗶𝗰𝗲 𝗿𝗲𝘀𝘁𝗮𝗿𝘁𝗲𝗱!!! eg. *monthly: xxx$";
                     }
                 }
-            case "/rswh": return this.resetWebhook();
 
             case "/clsbud": MonthlyReserveCache.clear();
-                        return "𝘔𝘰𝘯𝘵𝘩𝘭𝘺 𝘉𝘶𝘥𝘨𝘦𝘵 𝘩𝘢𝘴 𝘣𝘦𝘦𝘯 𝘤𝘭𝘦𝘢𝘳𝘦𝘥 𝘴𝘶𝘤𝘤𝘦𝘴𝘴𝘧𝘶𝘭𝘭𝘺!";
+                            return "𝘔𝘰𝘯𝘵𝘩𝘭𝘺 𝘉𝘶𝘥𝘨𝘦𝘵 𝘩𝘢𝘴 𝘣𝘦𝘦𝘯 𝘤𝘭𝘦𝘢𝘳𝘦𝘥 𝘴𝘶𝘤𝘤𝘦𝘴𝘴𝘧𝘶𝘭𝘭𝘺!";
 
             case "/calendar":
                 return Formatter.formatForexCalendar(ForexService.economicCalendar());
 
             case "/gold":
                 return Formatter.formatGoldPrice(ForexService.goldApiResp());
+
+            case "/assettemplate":
+                return Formatter.assetRegisterTemplate();
 
             case "/help":
                 return
@@ -463,7 +494,7 @@ public class TelegramBotService {
                         "• *Add:* `/loop +10m drink water`\n" +
                         "• *Remove:* `/loop - 1`\n" +
                         "• *Clear:* `/loop *`\n" +
-                    
+                    "⭐ /assettemplate \\-Get Asset Register Template\n" +
                     "💡 *Tip:* _Use the commands exactly as shown above._\n\n"+
                       MessageConst.getRandomQuote();
 
