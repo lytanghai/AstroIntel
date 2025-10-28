@@ -386,12 +386,12 @@ public class TelegramBotService {
         StringBuilder sb = new StringBuilder();
         sb.append("║ *𝙈𝙊𝙉𝙏𝙃𝙇𝙔 𝘾𝙍𝙔𝙋𝙏𝙊 𝙎𝙐𝙈𝙈𝘼𝙍𝙔* ║\n");
 
-// Calculate total amount for portfolio percentage
+        // Calculate total amount for portfolio percentage
         double totalAmount = summaryList.stream()
                 .mapToDouble(SummaryCryptoSavingResp::getAmount)
                 .sum();
 
-// Sort the list descending by amount
+        // Sort the list descending by amount
         summaryList.sort((a, b) -> Double.compare(b.getAmount(), a.getAmount()));
 
         for (SummaryCryptoSavingResp summary : summaryList) {
@@ -408,6 +408,8 @@ public class TelegramBotService {
                 sb.append(i < bars ? "█" : "░");
             }
             sb.append("] ").append(String.format("%.0f%%\n", assetPercent * 100));
+
+            sb.append("----------------------");
         }
 
         sb.append("🎯 *Keep stacking consistently! 🚀*");
