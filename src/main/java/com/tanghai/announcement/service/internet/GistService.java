@@ -45,6 +45,7 @@ public class GistService {
         headers.setAccept(Collections.singletonList(MediaType.valueOf("application/vnd.github+json")));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("User-Agent", "AstroApp");
+        log.info("id {} tk {}", properties.getGistId(), properties.getGithubToken());
 
         return headers;
     }
@@ -76,10 +77,6 @@ public class GistService {
                 Map.class
         );
 
-        if (response.getStatusCode().value() == 401) {
-            log.error("❌ Unauthorized (401): Check GitHub token or scopes");
-            throw new RuntimeException("GitHub API unauthorized. Please verify token.");
-        }
 
         Map files = (Map) response.getBody().get(TelegramConst.FILES);
         Map file = (Map) files.get(fileName);
