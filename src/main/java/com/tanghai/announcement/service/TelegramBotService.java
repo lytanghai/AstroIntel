@@ -1,7 +1,6 @@
 package com.tanghai.announcement.service;
 
 import com.tanghai.announcement.cache.MonthlyReserveCache;
-import com.tanghai.announcement.component.TelegramComponent;
 import com.tanghai.announcement.component.TelegramSender;
 import com.tanghai.announcement.constant.MessageConst;
 import com.tanghai.announcement.constant.TelegramConst;
@@ -17,7 +16,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.*;
@@ -315,17 +313,15 @@ public class TelegramBotService {
         gistService.updateGistContent(current, false, TelegramConst.MONTHLY);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("╔════════════════════════════════╗\n");
-        sb.append("║ 💠 *MONTHLY CRYPTO UPDATE* 💠 ║\n");
-        sb.append("╚════════════════════════════════╝\n\n");
+        sb.append("║ *MONTHLY CRYPTO UPDATE* ║\n");
 
         sb.append(String.format("📌 Symbol       : %s\n", monthlyCryptoReq.getSymbol()));
-        sb.append(String.format("💰 Amount       : %.2f USDT\n", monthlyCryptoReq.getAmount()).concat(" ").concat(monthlyCryptoReq.getSymbol()));
+        sb.append(String.format("💰 Amount       : %.2f USDT \n", monthlyCryptoReq.getAmount()));
         sb.append(String.format("🔄 Converted    : %.4f %s\n", monthlyCryptoReq.getConverted(), monthlyCryptoReq.getSymbol()));
         sb.append(String.format("🛒 Buy Price    : %.2f\n", monthlyCryptoReq.getBuyAt()));
         sb.append(String.format("🏦 Exchange     : %s\n", monthlyCryptoReq.getExchangeName()));
         sb.append(String.format("🌐 Network      : %s\n", monthlyCryptoReq.getNetworkType()));
-        sb.append(String.format("⚡ Network Fee  : %.4f %s\n", monthlyCryptoReq.getNetworkFee(), monthlyCryptoReq.getNetworkType()));
+        sb.append(String.format("⚡  Network Fee   : %.4f\n", monthlyCryptoReq.getNetworkFee()));
 
         // Optional: progress bar showing investment portion
         double percentage = monthlyCryptoReq.getConverted() / monthlyCryptoReq.getAmount(); // simple example
@@ -338,7 +334,6 @@ public class TelegramBotService {
         sb.append("] ").append(String.format("%.0f%%\n\n", percentage * 100));
 
         sb.append("🎯 *Consistency builds wealth. Stay focused!* 🚀\n");
-        sb.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
 
         return sb.toString();
@@ -389,7 +384,7 @@ public class TelegramBotService {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("║ 💠 *𝙈𝙊𝙉𝙏𝙃𝙇𝙔 𝘾𝙍𝙔𝙋𝙏𝙊 𝙎𝙐𝙈𝙈𝘼𝙍𝙔* 💠 ║\n");
+        sb.append("║ *𝙈𝙊𝙉𝙏𝙃𝙇𝙔 𝘾𝙍𝙔𝙋𝙏𝙊 𝙎𝙐𝙈𝙈𝘼𝙍𝙔* ║\n");
 
 // Calculate total amount for portfolio percentage
         double totalAmount = summaryList.stream()

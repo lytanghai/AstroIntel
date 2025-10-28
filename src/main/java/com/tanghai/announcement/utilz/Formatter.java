@@ -113,13 +113,13 @@ public class Formatter {
     public static String assetRegisterTemplate() {
         StringBuilder sb = new StringBuilder();
         sb.append("*asset:").append("\n")
-                .append("amount: ").append("\n")
-                .append("converted: ").append("\n")
-                .append("symbol").append("\n")
-                .append("exchange: ").append("\n")
-                .append("network_type").append("\n")
-                .append("network_fee").append("\n")
-                .append("buy_at").append("\n");
+        .append("amount: ").append("\n")
+        .append("converted: ").append("\n")
+        .append("symbol: ").append("\n")
+        .append("exchange: ").append("\n")
+        .append("network_type: ").append("\n")
+        .append("network_fee: ").append("\n")
+        .append("buy_at: ").append("\n");
         return sb.toString();
     }
 }
