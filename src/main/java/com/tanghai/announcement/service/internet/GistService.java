@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class GistService {
@@ -175,4 +172,7 @@ public class GistService {
         updateGistContent(json, true, TelegramConst.DATA_JSON);
     }
 
+    public void clearFile(String file) {
+        updateGistContent(new HashMap<>(), false, file);
+    }
 }

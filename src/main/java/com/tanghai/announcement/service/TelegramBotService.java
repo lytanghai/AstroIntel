@@ -288,7 +288,7 @@ public class TelegramBotService {
         gistUpdate.put("amount", monthlyCryptoReq.getAmount());
         gistUpdate.put("converted", monthlyCryptoReq.getConverted());
         gistUpdate.put("symbol", monthlyCryptoReq.getSymbol());
-        gistUpdate.put("exchange_name", monthlyCryptoReq.getExchangeName());
+        gistUpdate.put("exchange", monthlyCryptoReq.getExchangeName());
         gistUpdate.put("network_type", monthlyCryptoReq.getNetworkType());
         gistUpdate.put("network_fee", monthlyCryptoReq.getNetworkFee());
         gistUpdate.put("buy_at", monthlyCryptoReq.getBuyAt());
@@ -351,7 +351,7 @@ public class TelegramBotService {
             String symbol = eachObject.optString("symbol");
             Double amount = eachObject.optDouble("amount", 0.0);
             Double converted = eachObject.optDouble("converted", 0.0);
-            String exchangeName = eachObject.optString("exchange_name", "");
+            String exchangeName = eachObject.optString("exchange", "");
 
             SummaryCryptoSavingResp summary = summaryMap.getOrDefault(symbol, new SummaryCryptoSavingResp());
             summary.setSymbol(symbol);
@@ -386,7 +386,7 @@ public class TelegramBotService {
             sb.append(String.format("Symbol       : %s\n", summary.getSymbol()));
             sb.append(String.format("Amount       : %.2f\n", summary.getAmount()));
             sb.append(String.format("Converted    : %.4f\n", summary.getConverted()));
-            sb.append(String.format("Exchanges    : %s\n", summary.getExchangeName()));
+            sb.append(String.format("Exchange    : %s\n", summary.getExchangeName()));
             sb.append("───────────────────────────────\n");
         }
 

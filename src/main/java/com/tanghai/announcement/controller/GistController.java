@@ -2,10 +2,9 @@ package com.tanghai.announcement.controller;
 
 import com.tanghai.announcement.service.internet.GistService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.ws.rs.Path;
 
 @RestController
 @RequestMapping("/gist/cache")
@@ -29,5 +28,10 @@ public class GistController {
     public ResponseEntity<String> cacheStatus() {
         boolean cached = gistService.isCacheAvailable();
         return ResponseEntity.ok("Cache exists: " + cached);
+    }
+
+    @PostMapping("/clear-file/{file}")
+    public void clearFile(@PathVariable String file) {
+        gistService.clearFile(file);
     }
 }
