@@ -285,7 +285,7 @@ public class TelegramBotService {
 
         Map<String, Object> gistUpdate = new LinkedHashMap<>();
         gistUpdate.put("date", DateUtilz.format(new Date()));
-        gistUpdate.put("amt", monthlyCryptoReq.getAmount());
+        gistUpdate.put("amount", monthlyCryptoReq.getAmount());
         gistUpdate.put("converted", monthlyCryptoReq.getConverted());
         gistUpdate.put("symbol", monthlyCryptoReq.getSymbol());
         gistUpdate.put("exchange_name", monthlyCryptoReq.getExchangeName());
@@ -349,9 +349,9 @@ public class TelegramBotService {
         for (Object each : dataArray) {
             JSONObject eachObject = (JSONObject) each;
             String symbol = eachObject.optString("symbol");
-            Double amount = eachObject.optDouble("amt", 0.0);
+            Double amount = eachObject.optDouble("amount", 0.0);
             Double converted = eachObject.optDouble("converted", 0.0);
-            String exchangeName = eachObject.optString("exchangeName", "");
+            String exchangeName = eachObject.optString("exchange_name", "");
 
             SummaryCryptoSavingResp summary = summaryMap.getOrDefault(symbol, new SummaryCryptoSavingResp());
             summary.setSymbol(symbol);
@@ -419,7 +419,7 @@ public class TelegramBotService {
             case "/llist":
                 return this.listReminder();
 
-            case "/summary-asset":
+            case "/assets":
                 if (!"678134373".equals(chatId)) {
                     return "𝙔𝙤𝙪 𝙝𝙖𝙫𝙚 𝙣𝙤 𝙥𝙧𝙞𝙫𝙞𝙡𝙚𝙜𝙚 𝙩𝙤 𝙪𝙨𝙚 𝙩𝙝𝙞𝙨 𝙘𝙤𝙢𝙢𝙖𝙣𝙙❗";
                 } else {
