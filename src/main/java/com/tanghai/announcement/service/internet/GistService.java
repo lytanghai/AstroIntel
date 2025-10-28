@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +41,8 @@ public class GistService {
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + properties.getGithubToken().trim());
-        headers.setAccept(MediaType.parseMediaTypes("application/vnd.github+json"));
+//        headers.setAccept(MediaType.parseMediaTypes("application/vnd.github+json"));
+        headers.setAccept(Collections.singletonList(MediaType.valueOf("application/vnd.github+json")));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("User-Agent", "AstroApp");
 
@@ -73,6 +75,11 @@ public class GistService {
                 entity,
                 Map.class
         );
+
+        if (response.getStatusCode().value() == 401) {
+            log.error("❌ Unauthorized (401): Check GitHub token or scopes");
+            throw new RuntimeException("GitHub API unauthorized. Please verify token.");
+        }
 
         Map files = (Map) response.getBody().get(TelegramConst.FILES);
         Map file = (Map) files.get(fileName);

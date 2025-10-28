@@ -13,9 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Date;
 import java.util.Map;
@@ -31,20 +29,17 @@ public class TelegramBotService {
     private final GoldPriceService goldPriceService;
     private final GeminiApiService aiService;
 
-    private final TelegramComponent telegramComponent;
-
     private final Map<Integer, ScheduledFuture<?>> recurringTasks = new ConcurrentHashMap<>();
     private final Map<Integer, String> recurringMessages = new ConcurrentHashMap<>();
     private final Map<Integer, Long> recurringIntervals = new ConcurrentHashMap<>(); // seconds
     private final ScheduledExecutorService schedulerControl = Executors.newScheduledThreadPool(2);
     private final AtomicInteger reminderCounter = new AtomicInteger(1);
 
-    public TelegramBotService(TelegramSender telegramSender, GistService gistService, GoldPriceService goldPriceService, GeminiApiService aiService, TelegramComponent telegramComponent) {
+    public TelegramBotService(TelegramSender telegramSender, GistService gistService, GoldPriceService goldPriceService, GeminiApiService aiService) {
         this.telegramSender = telegramSender;
         this.gistService = gistService;
         this.goldPriceService = goldPriceService;
         this.aiService = aiService;
-        this.telegramComponent = telegramComponent;
     }
 
     public void handleUpdate(Update update) throws Exception {
