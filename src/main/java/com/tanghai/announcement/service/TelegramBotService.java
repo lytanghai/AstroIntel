@@ -4,19 +4,23 @@ import com.tanghai.announcement.cache.MonthlyReserveCache;
 import com.tanghai.announcement.component.TelegramComponent;
 import com.tanghai.announcement.component.TelegramSender;
 import com.tanghai.announcement.constant.MessageConst;
+import com.tanghai.announcement.constant.TelegramConst;
+import com.tanghai.announcement.dto.req.MonthlyCryptoReq;
+import com.tanghai.announcement.dto.resp.SummaryCryptoSavingResp;
 import com.tanghai.announcement.service.internet.ForexService;
 import com.tanghai.announcement.service.internet.GistService;
 import com.tanghai.announcement.service.internet.GoldPriceService;
 import com.tanghai.announcement.utilz.DateUtilz;
 import com.tanghai.announcement.utilz.Formatter;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -215,12 +219,196 @@ public class TelegramBotService {
         return message;
     }
 
+    public static MonthlyCryptoReq parseMonthlyMessage(String message) {
+        MonthlyCryptoReq req = new MonthlyCryptoReq();
+        message = message.replaceFirst("^\\*asset:\\s*", "").trim();
+        String[] lines = message.split("\\r?\\n");
+
+        for (String line : lines) {
+            if (!line.contains(":")) continue;
+
+            String[] parts = line.split(":", 2);
+            String key = parts[0].trim().toLowerCase();
+            String value = parts[1].trim();
+
+            try {
+                switch (key) {
+                    case "amount":
+                        req.setAmount(Double.parseDouble(value));
+                        break;
+                    case "converted":
+                        req.setConverted(Double.parseDouble(value));
+                        break;
+                    case "symbol":
+                        req.setSymbol(value);
+                        break;
+                    case "buy_at":
+                        req.setBuyAt(Double.parseDouble(value));
+                        break;
+                    case "exchange":
+                        req.setExchangeName(value);
+                        break;
+                    case "network_type":
+                        req.setNetworkType(value);
+                        break;
+                    case "network_fee":
+                        req.setNetworkFee(Double.parseDouble(value));
+                        break;
+                    default:
+                        break;
+                }
+            } catch (NumberFormatException e) {}
+        }
+
+        return req;
+    }
+
+    private String registerAsset(String message) {
+        MonthlyCryptoReq monthlyCryptoReq = parseMonthlyMessage(message);
+
+        // Validation
+        if (monthlyCryptoReq.getSymbol() == null)
+            return "❌ Symbol must be filled!";
+        if (monthlyCryptoReq.getExchangeName() == null)
+            return "❌ Exchange name must be filled!";
+        if (monthlyCryptoReq.getAmount() == null)
+            return "❌ Amount must be filled!";
+        if (monthlyCryptoReq.getConverted() == null)
+            return "❌ Converted amount must be filled!";
+        if (monthlyCryptoReq.getBuyAt() == null)
+            return "❌ Buy-at must be filled!";
+
+        if (monthlyCryptoReq.getNetworkType() == null || monthlyCryptoReq.getNetworkType().isEmpty())
+            monthlyCryptoReq.setNetworkType("N/A");
+        if (monthlyCryptoReq.getNetworkFee() == null)
+            monthlyCryptoReq.setNetworkFee(0.0);
+
+        Map<String, Object> gistUpdate = new LinkedHashMap<>();
+        gistUpdate.put("date", DateUtilz.format(new Date()));
+        gistUpdate.put("amt", monthlyCryptoReq.getAmount());
+        gistUpdate.put("converted", monthlyCryptoReq.getConverted());
+        gistUpdate.put("symbol", monthlyCryptoReq.getSymbol());
+        gistUpdate.put("exchange_name", monthlyCryptoReq.getExchangeName());
+        gistUpdate.put("network_type", monthlyCryptoReq.getNetworkType());
+        gistUpdate.put("network_fee", monthlyCryptoReq.getNetworkFee());
+        gistUpdate.put("buy_at", monthlyCryptoReq.getBuyAt());
+
+        Map<String, Object> current = gistService.getGistContent(false, TelegramConst.MONTHLY);
+        List<Map<String, Object>> dataList = new ArrayList<>();
+
+        if (current == null || current.isEmpty()) {
+            current = new HashMap<>();
+        } else {
+            Object dataObj = current.get("data");
+
+            if (dataObj instanceof List) {
+                dataList = (List<Map<String, Object>>) dataObj;
+            } else if (dataObj instanceof Map) {
+                dataList.add((Map<String, Object>) dataObj);
+            } else if (dataObj == null) {
+                dataList = new ArrayList<>();
+            }
+        }
+
+        dataList.add(gistUpdate);
+        current.put("data", dataList);
+        gistService.updateGistContent(current, false, TelegramConst.MONTHLY);
+
+        // Telegram-friendly summary
+        StringBuilder sb = new StringBuilder();
+        sb.append("────────────────────────────────────────\n");
+        sb.append("💠  MONTHLY CRYPTO UPDATE\n");
+        sb.append("────────────────────────────────────────\n");
+        sb.append("Yay! Another Month, Another Investment Cycle 🎉\n\n");
+        sb.append(String.format("Symbol       : %s\n", monthlyCryptoReq.getSymbol()));
+        sb.append(String.format("Amount       : %.2f USDT\n", monthlyCryptoReq.getAmount()));
+        sb.append(String.format("Converted    : %.4f %s\n", monthlyCryptoReq.getConverted(), monthlyCryptoReq.getSymbol()));
+        sb.append(String.format("Buy Price    : %.2f\n", monthlyCryptoReq.getBuyAt()));
+        sb.append(String.format("Exchange     : %s\n", monthlyCryptoReq.getExchangeName()));
+        sb.append(String.format("Network Type : %s\n", monthlyCryptoReq.getNetworkType()));
+        sb.append(String.format("Network Fee  : %.4f %s\n\n", monthlyCryptoReq.getNetworkFee(), monthlyCryptoReq.getNetworkType()));
+        sb.append("Consistency builds wealth. Stay focused. 🚀\n");
+        sb.append("─────────────────────────────────────────────");
+
+        return sb.toString();
+    }
+
+    public List<SummaryCryptoSavingResp> summaryCryptoSavingResp() {
+        Map<String, Object> monthlyJson = gistService.getGistContent(false, TelegramConst.MONTHLY);
+        if (monthlyJson == null || monthlyJson.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        JSONArray dataArray = new JSONObject(monthlyJson).optJSONArray("data");
+        if (dataArray == null || dataArray.length() == 0) {
+            return Collections.emptyList();
+        }
+
+        Map<String, SummaryCryptoSavingResp> summaryMap = new HashMap<>();
+
+        for (Object each : dataArray) {
+            JSONObject eachObject = (JSONObject) each;
+            String symbol = eachObject.optString("symbol");
+            Double amount = eachObject.optDouble("amt", 0.0);
+            Double converted = eachObject.optDouble("converted", 0.0);
+            String exchangeName = eachObject.optString("exchangeName", "");
+
+            SummaryCryptoSavingResp summary = summaryMap.getOrDefault(symbol, new SummaryCryptoSavingResp());
+            summary.setSymbol(symbol);
+
+            summary.setAmount((summary.getAmount() != null ? summary.getAmount() : 0.0) + amount);
+            summary.setConverted((summary.getConverted() != null ? summary.getConverted() : 0.0) + converted);
+
+            String existingExchanges = summary.getExchangeName();
+            if (existingExchanges == null || existingExchanges.isEmpty()) {
+                summary.setExchangeName(exchangeName);
+            } else if (!existingExchanges.contains(exchangeName)) {
+                summary.setExchangeName(existingExchanges + ", " + exchangeName);
+            }
+
+            summaryMap.put(symbol, summary);
+        }
+
+        return new ArrayList<>(summaryMap.values());
+    }
+
+    public String formatSummaryForTelegram(List<SummaryCryptoSavingResp> summaryList) {
+        if (summaryList == null || summaryList.isEmpty()) {
+            return "No crypto data available for this month.";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("───────────────────────────────\n");
+        sb.append("💠  MONTHLY CRYPTO SUMMARY\n");
+        sb.append("───────────────────────────────\n");
+
+        for (SummaryCryptoSavingResp summary : summaryList) {
+            sb.append(String.format("Symbol       : %s\n", summary.getSymbol()));
+            sb.append(String.format("Amount       : %.2f\n", summary.getAmount()));
+            sb.append(String.format("Converted    : %.4f\n", summary.getConverted()));
+            sb.append(String.format("Exchanges    : %s\n", summary.getExchangeName()));
+            sb.append("───────────────────────────────\n");
+        }
+
+        sb.append("Keep stacking consistently! 🚀");
+
+        return sb.toString();
+    }
+
     private String processCommand(String chatId, String command) throws Exception {
 
         log.info("incoming command {}", command);
 
         if (command.trim().startsWith("*monthly:")) {
             return this.budgetBreakdown(command, chatId);
+        }
+
+        if(command.startsWith("*asset:")) {
+            if (!"678134373".equals(chatId)) {
+                return "𝙔𝙤𝙪 𝙝𝙖𝙫𝙚 𝙣𝙤 𝙥𝙧𝙞𝙫𝙞𝙡𝙚𝙜𝙚 𝙩𝙤 𝙪𝙨𝙚 𝙩𝙝𝙞𝙨 𝙘𝙤𝙢𝙢𝙖𝙣𝙙❗";
+            } else {
+                return this.registerAsset(command);
+            }
         }
 
         if(command.startsWith("/loop")) {
@@ -231,6 +419,12 @@ public class TelegramBotService {
             case "/llist":
                 return this.listReminder();
 
+            case "/summary-asset":
+                if (!"678134373".equals(chatId)) {
+                    return "𝙔𝙤𝙪 𝙝𝙖𝙫𝙚 𝙣𝙤 𝙥𝙧𝙞𝙫𝙞𝙡𝙚𝙜𝙚 𝙩𝙤 𝙪𝙨𝙚 𝙩𝙝𝙞𝙨 𝙘𝙤𝙢𝙢𝙖𝙣𝙙❗";
+                } else {
+                    return this.formatSummaryForTelegram(summaryCryptoSavingResp());
+                }
 //-----------------------------------------------------------------
             case "/budget":
                 if (!"678134373".equals(chatId)) {

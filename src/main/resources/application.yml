@@ -14,8 +14,8 @@ app:
   base-url: https://astrointel.onrender.com
   version: 1.1.2
   features:
-    - Add new feature for reset webhook
-    - Update released notification
+    - Feature add asset
+    - Summary asset
 
 server:
   port: 8080

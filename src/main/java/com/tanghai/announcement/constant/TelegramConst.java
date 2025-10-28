@@ -8,4 +8,5 @@ public class TelegramConst {
     public final static String FILES = "files";
     public final static String TELEGRAM = "telegram";
     public final static String GIST_BASE_URL = "https://api.github.com/gists/";
+    public static final String MONTHLY = "monthly.json";
 }
