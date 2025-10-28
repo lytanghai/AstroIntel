@@ -389,9 +389,7 @@ public class TelegramBotService {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("╔════════════════════════════════════╗\n");
-        sb.append("║ 💠 *MONTHLY CRYPTO SUMMARY* 💠 ║\n");
-        sb.append("╚════════════════════════════════════╝\n\n");
+        sb.append("║ 💠 *𝙈𝙊𝙉𝙏𝙃𝙇𝙔 𝘾𝙍𝙔𝙋𝙏𝙊 𝙎𝙐𝙈𝙈𝘼𝙍𝙔* 💠 ║\n");
 
 // Calculate total amount for portfolio percentage
         double totalAmount = summaryList.stream()
@@ -409,14 +407,12 @@ public class TelegramBotService {
 
             // Calculate asset percentage
             double assetPercent = summary.getAmount() / totalAmount;
-            int bars = (int) (assetPercent * 10); // 10-bar scale
-            sb.append("📊 *Portfolio*  : [");
-            for (int i = 0; i < 10; i++) {
+            int bars = (int) (assetPercent * 5); // 5-bar scale
+            sb.append("📊 *Asset*  : [");
+            for (int i = 0; i < 5; i++) {
                 sb.append(i < bars ? "█" : "░");
             }
             sb.append("] ").append(String.format("%.0f%%\n", assetPercent * 100));
-
-            sb.append("───────────────────────────────\n");
         }
 
         sb.append("🎯 *Keep stacking consistently! 🚀*");
@@ -519,9 +515,4 @@ public class TelegramBotService {
         }
     }
 
-    public String resetWebhook() {
-        RestTemplate restTemplate = new RestTemplate();
-        String fullUrl = "https://astrointel.onrender.com/telegram/webhook/reset";
-        return restTemplate.getForObject(fullUrl, String.class);
-    }
 }
